@@ -1,4 +1,4 @@
-import DummyClass from '../src/antares-protocol'
+import AntaresProtocol from '../src/antares-protocol'
 
 /**
  * Dummy test
@@ -8,7 +8,7 @@ describe('Dummy test', () => {
     expect(true).toBeTruthy()
   })
 
-  it('DummyClass is instantiable', () => {
-    expect(new DummyClass()).toBeInstanceOf(DummyClass)
+  it('AntaresProtocol is instantiable', () => {
+    expect(new AntaresProtocol()).toBeInstanceOf(AntaresProtocol)
   })
 })

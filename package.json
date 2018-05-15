@@ -1,6 +1,6 @@
 {
   "name": "antares-protocol",
-  "version": "0.0.0-development",
+  "version": "0.5.0.pre-alpha",
   "description": "",
   "keywords": [],
   "main": "dist/antares-protocol.umd.js",
