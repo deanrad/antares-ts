@@ -107,5 +107,6 @@
     "typescript": "^2.6.2",
     "validate-commit-msg": "^2.12.2",
     "travis-deploy-once": "^5.0.0"
-  }
+  },
+  "runkitExampleFilename": "_runkitExample.js"
 }
