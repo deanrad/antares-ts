@@ -16,11 +16,24 @@ export interface Renderer {
 }
 
 export default class AntaresProtocol {
-  process(action: Action): Promise<any> {
-    return Promise.resolve('☸')
+  renderers: Array<Renderer>
+
+  constructor() {
+    this.renderers = []
   }
+
+  process(action: Action): Promise<any> {
+    // simplistic implementation invokes every renderer synchronously
+    try {
+      this.renderers.forEach(r => r({ action }))
+      return Promise.resolve('☸')
+    } catch (ex) {
+      return Promise.reject(ex)
+    }
+  }
+
   subscribeRenderer(renderer: Renderer): void {
     // HACK eventually the renderer will get called for every processed action
-    renderer({ action: { type: 'Persist.toDB' } })
+    this.renderers.push(renderer)
   }
 }

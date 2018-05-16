@@ -32,10 +32,29 @@ describe('AntaresProtocol', () => {
       it('accepts a function to be called upon processing of actions', () => {
         const renderer = jest.fn()
         const result = antares.subscribeRenderer(renderer)
-        const action = { type: 'XXX' }
+        const action = { type: 'Rando' }
 
-        // XXX should assert the actual action goes through once we have an actual RxJS Subject to subscribe to
-        expect(renderer).toHaveBeenCalledWith({ action: expect.any(Object) })
+        antares.process(action)
+        expect(renderer).toHaveBeenCalledWith({ action })
+      })
+    })
+
+    describe('#process', () => {
+      it('returns a resolved promise', () => {
+        expect.assertions(1)
+        const result = antares.process({ type: 'rando' })
+        return expect(result).resolves.toBeTruthy()
+      })
+
+      it('returns a rejected promise if an exception occurs', () => {
+        expect.assertions(1)
+        antares.subscribeRenderer(() => {
+          throw new Error('whoops')
+        })
+
+        const result = antares.process({ type: 'rando' })
+
+        return expect(result).rejects.toBeTruthy()
       })
     })
   })
