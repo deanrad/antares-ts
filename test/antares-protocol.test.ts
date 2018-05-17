@@ -1,5 +1,6 @@
 import AntaresProtocol from '../src/antares-protocol'
-
+import { Observable } from 'rxjs'
+import { map, take, toArray } from 'rxjs/operators'
 /**
  * Dummy test
  */
@@ -46,15 +47,8 @@ describe('AntaresProtocol', () => {
         return expect(result).resolves.toBeTruthy()
       })
 
-      it('returns a rejected promise if an exception occurs', () => {
-        expect.assertions(1)
-        antares.subscribeRenderer(() => {
-          throw new Error('whoops')
-        })
-
-        const result = antares.process({ type: 'rando' })
-
-        return expect(result).rejects.toBeTruthy()
+      describe('errors in renderers', () => {
+        it('returns a rejected promise if an exception occurs')
       })
     })
 
@@ -68,9 +62,7 @@ describe('AntaresProtocol', () => {
 
         // get a promise for all seen actions from now, as an array
         const lastTwoActions = antares.action$
-          .map(justTheAction)
-          .take(2)
-          .toArray()
+          .pipe(map(justTheAction), take(2), toArray())
           .toPromise()
 
         // process actions

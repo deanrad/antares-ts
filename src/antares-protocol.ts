@@ -23,21 +23,15 @@ export default class AntaresProtocol {
 
   constructor() {
     this.subject = new Subject<ActionStreamItem>()
-    this.action$ = this.subject
+    this.action$ = this.subject.asObservable()
   }
 
   process(action: Action): Promise<ActionStreamItem> {
-    debugger
-    try {
-      this.subject.next({ action })
-      return Promise.resolve({ action })
-    } catch (error) {
-      action.error = true
-      return Promise.reject({ action, error })
-    }
+    this.subject.next({ action })
+    return Promise.resolve({ action })
   }
 
   subscribeRenderer(renderer: Renderer): Subscription {
-    return this.subject.subscribe(renderer)
+    return this.action$.subscribe(renderer)
   }
 }
