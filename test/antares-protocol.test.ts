@@ -57,5 +57,28 @@ describe('AntaresProtocol', () => {
         return expect(result).rejects.toBeTruthy()
       })
     })
+
+    describe('#action$ - the action stream', () => {
+      // used to pluck from the action stream
+      const justTheAction = ({ action }) => action
+
+      it('exposes each processed action', () => {
+        expect.assertions(1)
+        const randomActions = [{ type: 'rando 1' }, { type: 'rando 2' }]
+
+        // get a promise for all seen actions from now, as an array
+        const lastTwoActions = antares.action$
+          .map(justTheAction)
+          .take(2)
+          .toArray()
+          .toPromise()
+
+        // process actions
+        randomActions.forEach(a => antares.process(a))
+
+        // expect the resolved value toEqual our randomActions
+        return expect(lastTwoActions).resolves.toMatchSnapshot()
+      })
+    })
   })
 })

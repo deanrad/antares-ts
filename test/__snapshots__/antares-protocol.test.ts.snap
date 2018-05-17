@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AntaresProtocol instance methods #action$ - the action stream exposes each processed action 1`] = `
+Array [
+  Object {
+    "type": "rando 1",
+  },
+  Object {
+    "type": "rando 2",
+  },
+]
+`;

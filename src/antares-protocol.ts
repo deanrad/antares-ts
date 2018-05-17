@@ -1,3 +1,5 @@
+import { Subject, Observable, Subscription } from 'rxjs'
+
 // Import here Polyfills if needed. Recommended core-js (npm i -D core-js)
 
 export interface Action {
@@ -16,24 +18,26 @@ export interface Renderer {
 }
 
 export default class AntaresProtocol {
-  renderers: Array<Renderer>
+  subject: Subject<ActionStreamItem>
+  action$: Observable<ActionStreamItem>
 
   constructor() {
-    this.renderers = []
+    this.subject = new Subject<ActionStreamItem>()
+    this.action$ = this.subject
   }
 
-  process(action: Action): Promise<any> {
-    // simplistic implementation invokes every renderer synchronously
+  process(action: Action): Promise<ActionStreamItem> {
+    debugger
     try {
-      this.renderers.forEach(r => r({ action }))
-      return Promise.resolve('☸')
-    } catch (ex) {
-      return Promise.reject(ex)
+      this.subject.next({ action })
+      return Promise.resolve({ action })
+    } catch (error) {
+      action.error = true
+      return Promise.reject({ action, error })
     }
   }
 
-  subscribeRenderer(renderer: Renderer): void {
-    // HACK eventually the renderer will get called for every processed action
-    this.renderers.push(renderer)
+  subscribeRenderer(renderer: Renderer): Subscription {
+    return this.subject.subscribe(renderer)
   }
 }
