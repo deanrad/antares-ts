@@ -1,4 +1,4 @@
-import { Subject, Observable, Subscription } from 'rxjs'
+import { Subject, Observable, Subscription, Scheduler } from 'rxjs'
 
 // Import here Polyfills if needed. Recommended core-js (npm i -D core-js)
 
@@ -17,6 +17,15 @@ export interface Renderer {
   (item: ActionStreamItem): any
 }
 
+export enum RenderMode {
+  sync = 'sync',
+  async = 'async'
+}
+
+export interface RendererConfig {
+  mode: RenderMode
+}
+
 export default class AntaresProtocol {
   subject: Subject<ActionStreamItem>
   action$: Observable<ActionStreamItem>
@@ -31,7 +40,12 @@ export default class AntaresProtocol {
     return Promise.resolve({ action })
   }
 
-  subscribeRenderer(renderer: Renderer): Subscription {
-    return this.action$.subscribe(renderer)
+  subscribeRenderer(
+    renderer: Renderer,
+    config: RendererConfig = { mode: RenderMode.sync }
+  ): Subscription {
+    const subscribeTo =
+      config.mode === RenderMode.async ? this.action$.observeOn(Scheduler.async) : this.action$
+    return subscribeTo.subscribe(renderer)
   }
 }

@@ -1,4 +1,9 @@
-import { default as AntaresProtocol, Action, ActionStreamItem } from '../src/antares-protocol'
+import {
+  default as AntaresProtocol,
+  Action,
+  ActionStreamItem,
+  RenderMode
+} from '../src/antares-protocol'
 import { Observable } from 'rxjs'
 import { map, take, toArray } from 'rxjs/operators'
 import { debug } from 'util'
@@ -40,8 +45,6 @@ describe('AntaresProtocol', () => {
         antares.process(action)
         expect(renderer).toHaveBeenCalledWith({ action })
       })
-
-      it('defaults to subscribing in online/synchronous mode')
 
       describe('synchronous (online) mode', () => {
         describe('a renderer error', () => {
@@ -92,6 +95,25 @@ describe('AntaresProtocol', () => {
               // You should not have to wrap process in try{ } - rather, handle errors Promise-style.
             }
           )
+        })
+      })
+
+      describe('async (batch) mode', () => {
+        describe('a renderer error', () => {
+          it('does not propogate to the caller of #process', () => {
+            antares.subscribeRenderer(
+              () => {
+                throw new Error('whoops')
+              },
+              { mode: RenderMode.async }
+            )
+
+            const doIt = () => {
+              antares.process({ type: 'any' })
+            }
+
+            expect(doIt).not.toThrow()
+          })
         })
       })
     })
