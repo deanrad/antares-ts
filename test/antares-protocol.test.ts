@@ -44,10 +44,54 @@ describe('AntaresProtocol', () => {
       it('defaults to subscribing in online/synchronous mode')
 
       describe('synchronous (online) mode', () => {
-        describe('renderer errors', () => {
-          it('propogate up to the caller of #process')
-          it('prevent subsequent renderers from running during that event loop turn')
-          it('unsubscribe the renderer')
+        describe('a renderer error', () => {
+          it('propogates up to the caller of #process', () => {
+            antares.subscribeRenderer(() => {
+              throw new Error('unconditionally')
+            })
+            const doIt = () => {
+              antares.process({ type: 'any' })
+            }
+            expect(doIt).toThrowErrorMatchingSnapshot()
+          })
+          it(
+            [
+              'prevents subsequent renderers from running during that event loop turn',
+              'unsubscribes the offending renderer',
+              'allows other renderers to run in future event loop turns'
+            ].join(', '),
+            () => {
+              let before = jest.fn()
+              let after = jest.fn()
+              expect.assertions(5)
+
+              antares.subscribeRenderer(before)
+              antares.subscribeRenderer(() => {
+                throw new Error('unconditionally')
+              })
+              antares.subscribeRenderer(after)
+
+              // force error - in this event loop turn some renderers wont run
+              try {
+                antares.process({ type: 'any' })
+              } catch (ex) {
+                expect(before).toHaveBeenCalled()
+                expect(after).not.toHaveBeenCalled()
+              }
+
+              const shouldntThrow = () => {
+                antares.process({ type: 'any' })
+              }
+
+              // Process again, and the 2 non-throwing renderers are still subscribed
+              expect(shouldntThrow).not.toThrow()
+              expect(before).toHaveBeenCalledTimes(2)
+              expect(after).toHaveBeenCalledTimes(1)
+
+              // Long story short - synchronous render errors should have their own exception handling.
+              // You should not have to wrap process in try{ } - rather, handle errors Promise-style.
+            }
+          )
         })
       })
     })
@@ -57,10 +101,6 @@ describe('AntaresProtocol', () => {
         expect.assertions(1)
         const result = antares.process({ type: 'rando' })
         return expect(result).resolves.toBeTruthy()
-      })
-
-      describe('errors in renderers', () => {
-        it('returns a rejected promise if an exception occurs')
       })
     })
 

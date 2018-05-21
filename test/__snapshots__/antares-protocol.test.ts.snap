@@ -10,3 +10,5 @@ Array [
   },
 ]
 `;
+
+exports[`AntaresProtocol instance methods #subscribeRenderer synchronous (online) mode a renderer error propogates up to the caller of #process 1`] = `"unconditionally"`;
