@@ -1,6 +1,7 @@
-import AntaresProtocol from '../src/antares-protocol'
+import { default as AntaresProtocol, Action, ActionStreamItem } from '../src/antares-protocol'
 import { Observable } from 'rxjs'
 import { map, take, toArray } from 'rxjs/operators'
+import { debug } from 'util'
 /**
  * Dummy test
  */
@@ -17,7 +18,8 @@ describe('AntaresProtocol', () => {
   })
 
   describe('instance methods', () => {
-    let antares
+    let antares: AntaresProtocol
+
     beforeEach(() => {
       antares = new AntaresProtocol()
     })
@@ -38,6 +40,16 @@ describe('AntaresProtocol', () => {
         antares.process(action)
         expect(renderer).toHaveBeenCalledWith({ action })
       })
+
+      it('defaults to subscribing in online/synchronous mode')
+
+      describe('synchronous (online) mode', () => {
+        describe('renderer errors', () => {
+          it('propogate up to the caller of #process')
+          it('prevent subsequent renderers from running during that event loop turn')
+          it('unsubscribe the renderer')
+        })
+      })
     })
 
     describe('#process', () => {
@@ -54,7 +66,7 @@ describe('AntaresProtocol', () => {
 
     describe('#action$ - the action stream', () => {
       // used to pluck from the action stream
-      const justTheAction = ({ action }) => action
+      const justTheAction = ({ action }: ActionStreamItem) => action
 
       it('exposes each processed action', () => {
         expect.assertions(1)
