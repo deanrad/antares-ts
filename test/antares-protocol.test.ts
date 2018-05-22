@@ -4,6 +4,8 @@ import {
   ActionStreamItem,
   RenderMode
 } from '../src/antares-protocol'
+import fs from 'fs'
+import { default as faker } from 'faker'
 import { Observable } from 'rxjs'
 import { map, take, toArray } from 'rxjs/operators'
 import { debug } from 'util'
@@ -123,6 +125,35 @@ describe('AntaresProtocol', () => {
         expect.assertions(1)
         const result = antares.process({ type: 'rando' })
         return expect(result).resolves.toBeTruthy()
+      })
+
+      it('can be used to abstract the WHAT from the HOW', () => {
+        const bizTalk = faker.fake('{{company.bsBuzz}} {{company.bsAdjective}} {{company.bsNoun}}')
+
+        expect.assertions(1)
+
+        const action = {
+          type: 'File.append',
+          payload: {
+            fileName: 'antares.test.log',
+            content: bizTalk
+          }
+        }
+
+        const logFileAppender = ({ action: { type, payload } }) => {
+          // Most renderers care about a subset of actions. Return early if you don't care.
+          if (!type.match(/^File\./)) return
+
+          const { fileName, content } = payload
+          return fs.appendFileSync(fileName, content + '\n', { encoding: 'UTF8' })
+        }
+
+        antares.subscribeRenderer(logFileAppender)
+        antares.process(action)
+
+        // Because we subscribed our renderer synchronously, we can expect the
+        // text was written to the file.
+        expect(fs.readFileSync(action.payload.fileName, 'UTF8')).toMatch(bizTalk)
       })
     })
 
