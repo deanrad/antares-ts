@@ -1,5 +1,5 @@
 import {
-  default as AntaresProtocol,
+  AntaresProtocol,
   Action,
   ActionStreamItem,
   RenderMode

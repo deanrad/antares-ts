@@ -112,5 +112,6 @@
     "rxjs": "^6.1.0",
     "rxjs-compat": "^6.1.0"
   },
+  "tonicExampleFilename": "_runkitExample.js",
   "runkitExampleFilename": "_runkitExample.js"
 }

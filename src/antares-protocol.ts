@@ -26,7 +26,7 @@ export interface RendererConfig {
   mode: RenderMode
 }
 
-export default class AntaresProtocol {
+export class AntaresProtocol {
   subject: Subject<ActionStreamItem>
   action$: Observable<ActionStreamItem>
 
@@ -45,7 +45,11 @@ export default class AntaresProtocol {
     config: RendererConfig = { mode: RenderMode.sync }
   ): Subscription {
     const subscribeTo =
-      config.mode === RenderMode.async ? this.action$.observeOn(Scheduler.async) : this.action$
+      config.mode === RenderMode.async
+        ? this.action$.observeOn(Scheduler.async)
+        : this.action$
     return subscribeTo.subscribe(renderer)
   }
 }
+
+export default AntaresProtocol
