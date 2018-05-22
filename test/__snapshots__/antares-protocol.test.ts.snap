@@ -11,4 +11,18 @@ Array [
 ]
 `;
 
+exports[`AntaresProtocol instance methods #subscribeRenderer accepts { name:String } on the config object 1`] = `
+Array [
+  "JohnnyNull",
+]
+`;
+
+exports[`AntaresProtocol instance methods #subscribeRenderer defaults naming a renderer 'renderer_N' 1`] = `
+Array [
+  "JohnnyNull",
+  "renderer_2",
+  "JohnnyFive",
+]
+`;
+
 exports[`AntaresProtocol instance methods #subscribeRenderer synchronous (online) mode a renderer error propogates up to the caller of #process 1`] = `"unconditionally"`;

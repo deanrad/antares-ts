@@ -1,17 +1,15 @@
-import {
-  AntaresProtocol,
-  Action,
-  ActionStreamItem,
-  RenderMode
-} from '../src/antares-protocol'
+import { AntaresProtocol, Action, ActionStreamItem, RenderMode } from '../src/antares-protocol'
 import fs from 'fs'
 import { default as faker } from 'faker'
 import { Observable } from 'rxjs'
 import { map, take, toArray } from 'rxjs/operators'
 import { debug } from 'util'
-/**
- * Dummy test
- */
+
+// used to pluck from the action stream
+const justTheAction = ({ action }: ActionStreamItem) => action
+const noRender = () => null
+
+// Sanity check
 describe('AntaresProtocol', () => {
   it('is instantiable', () => {
     expect(new AntaresProtocol()).toBeInstanceOf(AntaresProtocol)
@@ -46,6 +44,19 @@ describe('AntaresProtocol', () => {
 
         antares.process(action)
         expect(renderer).toHaveBeenCalledWith({ action })
+      })
+
+      it('accepts { name:String } on the config object', () => {
+        antares.subscribeRenderer(noRender, { name: 'JohnnyNull' })
+        expect(Array.from(antares._rendererSubs.keys())).toMatchSnapshot()
+      })
+      it("defaults naming a renderer 'renderer_N'", () => {
+        antares.subscribeRenderer(noRender, { name: 'JohnnyNull' })
+        antares.subscribeRenderer(noRender)
+        antares.subscribeRenderer(noRender, { name: 'JohnnyFive' })
+        const rendererNames = Array.from(antares._rendererSubs.keys())
+        expect(rendererNames).toContain('renderer_2')
+        expect(rendererNames).toMatchSnapshot()
       })
 
       describe('synchronous (online) mode', () => {
@@ -158,9 +169,6 @@ describe('AntaresProtocol', () => {
     })
 
     describe('#action$ - the action stream', () => {
-      // used to pluck from the action stream
-      const justTheAction = ({ action }: ActionStreamItem) => action
-
       it('exposes each processed action', () => {
         expect.assertions(1)
         const randomActions = [{ type: 'rando 1' }, { type: 'rando 2' }]

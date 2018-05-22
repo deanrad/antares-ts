@@ -23,16 +23,20 @@ export enum RenderMode {
 }
 
 export interface RendererConfig {
-  mode: RenderMode
+  mode?: RenderMode
+  name?: String
 }
 
 export class AntaresProtocol {
   subject: Subject<ActionStreamItem>
   action$: Observable<ActionStreamItem>
+  _rendererSubs: Map<String, Subscription>
+  _rendererCount = 0
 
   constructor() {
     this.subject = new Subject<ActionStreamItem>()
     this.action$ = this.subject.asObservable()
+    this._rendererSubs = new Map<String, Subscription>()
   }
 
   process(action: Action): Promise<ActionStreamItem> {
@@ -42,13 +46,16 @@ export class AntaresProtocol {
 
   subscribeRenderer(
     renderer: Renderer,
-    config: RendererConfig = { mode: RenderMode.sync }
+    { mode = RenderMode.sync, name }: RendererConfig = { mode: RenderMode.sync }
   ): Subscription {
     const subscribeTo =
-      config.mode === RenderMode.async
-        ? this.action$.observeOn(Scheduler.async)
-        : this.action$
-    return subscribeTo.subscribe(renderer)
+      mode === RenderMode.async ? this.action$.observeOn(Scheduler.async) : this.action$
+    const subscription = subscribeTo.subscribe(renderer)
+
+    this._rendererCount += 1
+    const _name = name || `renderer_${this._rendererCount}`
+    this._rendererSubs.set(_name, subscription)
+    return subscription
   }
 }
 
