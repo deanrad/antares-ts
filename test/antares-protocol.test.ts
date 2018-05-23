@@ -9,6 +9,23 @@ import { debug } from 'util'
 const justTheAction = ({ action }: ActionStreamItem) => action
 const noRender = () => null
 
+// wraps an it scenario and silences console messages during its executions
+const inSilence = itFn => {
+  const callIt = done => {
+    const _console = global.console
+    global.console = { log: jest.fn(), error: jest.fn() } // tslint:disable-line
+    try {
+      itFn(done)
+    } catch (ex) {
+      // tslint:disable-line
+    } finally {
+      global.console = _console
+    }
+  }
+
+  // preserve arity in returned fn
+  return itFn.length === 1 ? done => callIt(done) : () => callIt(undefined)
+}
 // Sanity check
 describe('AntaresProtocol', () => {
   it('is instantiable', () => {
