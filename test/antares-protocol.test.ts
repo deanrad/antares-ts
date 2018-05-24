@@ -1,13 +1,14 @@
 import { AntaresProtocol, Action, ActionStreamItem, RenderMode } from '../src/antares-protocol'
 import fs from 'fs'
 import { default as faker } from 'faker'
-import { Observable } from 'rxjs'
-import { map, take, toArray } from 'rxjs/operators'
+import { Observable, Subject, BehaviorSubject } from 'rxjs'
+import { map, skip, take, toArray } from 'rxjs/operators'
 import { debug } from 'util'
 
 // used to pluck from the action stream
 const justTheAction = ({ action }: ActionStreamItem) => action
 const noRender = () => null
+const noSpecialValue = 'noSpecialValue'
 
 // wraps an it scenario and silences console messages during its executions
 const inSilence = itFn => {
@@ -60,7 +61,7 @@ describe('AntaresProtocol', () => {
         const action = { type: 'Rando' }
 
         antares.process(action)
-        expect(renderer).toHaveBeenCalledWith({ action })
+        expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ action }))
       })
 
       it('accepts { name:String } on the config object', () => {
@@ -133,7 +134,7 @@ describe('AntaresProtocol', () => {
           it('does not propogate to the caller of #process', () => {
             antares.subscribeRenderer(
               () => {
-                throw new Error('whoops')
+                throw new Error('iShouldJustLogNotGoNuclear')
               },
               { mode: RenderMode.async }
             )
@@ -192,7 +193,7 @@ describe('AntaresProtocol', () => {
 
         // get a promise for all seen actions from now, as an array
         const lastTwoActions = antares.action$
-          .pipe(map(justTheAction), take(2), toArray())
+          .pipe(take(2), map(justTheAction), toArray())
           .toPromise()
 
         // process actions
@@ -200,6 +201,58 @@ describe('AntaresProtocol', () => {
 
         // expect the resolved value toEqual our randomActions
         return expect(lastTwoActions).resolves.toMatchSnapshot()
+      })
+
+      it('contains an entry on {results} for each synchronous renderer', () => {
+        expect.assertions(4)
+
+        // set up a listener for testing - a Subject whose .value is the last thing it observed
+        const lastItemSubject = new BehaviorSubject<ActionStreamItem>(null)
+        antares.action$.subscribe(lastItemSubject)
+
+        // set up a normal renderer
+        antares.subscribeRenderer(item => noSpecialValue, {
+          name: 'rememberMyName',
+          mode: RenderMode.sync
+        })
+
+        // I have to admit I dont understand why '2' below - something to do w/ BehaviorSubject
+        const nextItem = lastItemSubject.pipe(take(2)).toPromise()
+        // process an item
+        antares.process({ type: 'fooz' })
+
+        return nextItem.then(item => {
+          expect(item).toHaveProperty('results')
+          expect(item.results).toBeInstanceOf(Map)
+          expect(Array.from(item.results.keys())).toContain('rememberMyName')
+          expect(item).toMatchSnapshot()
+        })
+      })
+
+      it('contains an entry on {resultsAsync} for each async renderer', () => {
+        expect.assertions(4)
+
+        // set up a listener for testing - a Subject whose .value is the last thing it observed
+        const lastItemSubject = new BehaviorSubject<ActionStreamItem>(null)
+        antares.action$.subscribe(lastItemSubject)
+
+        // set up a normal renderer
+        antares.subscribeRenderer(item => noSpecialValue, {
+          name: 'asyncYo',
+          mode: RenderMode.sync
+        })
+
+        // I have to admit I dont understand why '2' below - something to do w/ BehaviorSubject
+        const nextItem = lastItemSubject.pipe(take(2)).toPromise()
+        // process an item
+        antares.process({ type: 'fooz' })
+
+        return nextItem.then(item => {
+          expect(item).toHaveProperty('resultsAsync')
+          expect(item.results).toBeInstanceOf(Map)
+          expect(Array.from(item.results.keys())).toContain('asyncYo')
+          expect(item).toMatchSnapshot()
+        })
       })
     })
   })

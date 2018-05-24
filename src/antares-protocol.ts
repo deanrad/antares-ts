@@ -11,10 +11,24 @@ export interface Action {
 
 export interface ActionStreamItem {
   action: Action
+  results: Map<String, any>
+  resultsAsync: Map<String, Observable<any>>
+}
+
+export interface SyncRenderer {
+  (item: ActionStreamItem): any
+}
+
+export interface AsyncRenderer {
+  (item: ActionStreamItem): Observable<Action>
 }
 
 export interface Renderer {
-  (item: ActionStreamItem): any | Observer<ActionStreamItem>
+  (item: ActionStreamItem): any
+}
+
+export interface SafeRenderer {
+  (item: ActionStreamItem): any
 }
 
 export enum RenderMode {
@@ -40,20 +54,33 @@ export class AntaresProtocol {
   }
 
   process(action: Action): Promise<ActionStreamItem> {
-    this.subject.next({ action })
-    return Promise.resolve({ action })
+    const results = new Map<String, any>()
+    const resultsAsync = new Map<String, Observable<any>>()
+    const item = { action, results, resultsAsync }
+
+    // synchronous renderers will
+    this.subject.next(item)
+    return Promise.resolve(item)
   }
 
   subscribeRenderer(
     renderer: Renderer,
     { mode = RenderMode.sync, name }: RendererConfig = { mode: RenderMode.sync }
   ): Subscription {
-    const subscribeTo =
-      mode === RenderMode.async ? this.action$.observeOn(Scheduler.async) : this.action$
-    const subscription = subscribeTo.subscribe(renderer)
-
     this._rendererCount += 1
     const _name = name || `renderer_${this._rendererCount}`
+    const subscribeTo =
+      mode === RenderMode.async ? this.action$.observeOn(Scheduler.async) : this.action$
+
+    const safeRenderer: SafeRenderer = (item: ActionStreamItem) => {
+      let result = renderer(item)
+
+      if (mode === RenderMode.sync) item.results.set(_name, result)
+      else item.resultsAsync.set(_name, result)
+      return result
+    }
+
+    const subscription = subscribeTo.subscribe(safeRenderer)
     this._rendererSubs.set(_name, subscription)
     return subscription
   }

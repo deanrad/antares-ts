@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`AntaresProtocol instance methods #action$ - the action stream contains an entry on {results} for each synchronous renderer 1`] = `
+Object {
+  "action": Object {
+    "type": "fooz",
+  },
+  "results": Map {
+    "rememberMyName" => "noSpecialValue",
+  },
+  "resultsAsync": Map {},
+}
+`;
+
+exports[`AntaresProtocol instance methods #action$ - the action stream contains an entry on {resultsAsync} for each async renderer 1`] = `
+Object {
+  "action": Object {
+    "type": "fooz",
+  },
+  "results": Map {
+    "asyncYo" => "noSpecialValue",
+  },
+  "resultsAsync": Map {},
+}
+`;
+
 exports[`AntaresProtocol instance methods #action$ - the action stream exposes each processed action 1`] = `
 Array [
   Object {
