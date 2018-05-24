@@ -5,11 +5,6 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs'
 import { map, skip, take, toArray } from 'rxjs/operators'
 import { debug } from 'util'
 
-// used to pluck from the action stream
-const justTheAction = ({ action }: ActionStreamItem) => action
-const noRender = () => null
-const noSpecialValue = 'noSpecialValue'
-
 // wraps an it scenario and silences console messages during its executions
 const inSilence = itFn => {
   const callIt = done => {
@@ -169,14 +164,6 @@ describe('AntaresProtocol', () => {
           }
         }
 
-        const logFileAppender = ({ action: { type, payload } }) => {
-          // Most renderers care about a subset of actions. Return early if you don't care.
-          if (!type.match(/^File\./)) return
-
-          const { fileName, content } = payload
-          return fs.appendFileSync(fileName, content + '\n', { encoding: 'UTF8' })
-        }
-
         antares.subscribeRenderer(logFileAppender)
         antares.process(action)
 
@@ -257,3 +244,16 @@ describe('AntaresProtocol', () => {
     })
   })
 })
+
+/**** util functions below ****/
+const justTheAction = ({ action }: ActionStreamItem) => action
+const noRender = () => null
+const noSpecialValue = 'noSpecialValue'
+
+const logFileAppender = ({ action: { type, payload } }) => {
+  // Most renderers care about a subset of actions. Return early if you don't care.
+  if (!type.match(/^File\./)) return
+
+  const { fileName, content } = payload
+  return fs.appendFileSync(fileName, content + '\n', { encoding: 'UTF8' })
+}
