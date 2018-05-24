@@ -1,4 +1,4 @@
-import { Subject, Observable, Subscription, Scheduler } from 'rxjs'
+import { Subject, Observable, Observer, Subscription, Scheduler } from 'rxjs'
 
 // Import here Polyfills if needed. Recommended core-js (npm i -D core-js)
 
@@ -14,7 +14,7 @@ export interface ActionStreamItem {
 }
 
 export interface Renderer {
-  (item: ActionStreamItem): any
+  (item: ActionStreamItem): any | Observer<ActionStreamItem>
 }
 
 export enum RenderMode {
