@@ -1,5 +1,6 @@
 import { default as faker } from 'faker'
 import fs from 'fs'
+import { Observable } from 'rxjs'
 import { of } from 'rxjs/observable/of'
 import { delay, map, take, toArray } from 'rxjs/operators'
 import {
@@ -146,6 +147,26 @@ describe('AntaresProtocol', () => {
 
             expect(doIt).not.toThrow()
           })
+          it('will cause the renderer to be unsubscribed')
+        })
+
+        describe('happy path', () => {
+          it('will run the renderer only once', async () => {
+            expect.assertions(2)
+
+            // a function returning an observable we wouldn't want subscribed multiply
+            let subscribeCount = 0
+            const returnsObs = () =>
+              new Observable(() => {
+                subscribeCount += 1
+              })
+            antares.subscribeRenderer(returnsObs, { name: 'FooAsync', mode: RenderMode.async })
+
+            const { resultsAsync } = await antares.process(anyAction)
+            const obsResult = resultsAsync.get('FooAsync')
+            expect(obsResult).toBeInstanceOf(Observable)
+            expect(subscribeCount).toEqual(1)
+          })
         })
       })
     })
@@ -224,7 +245,7 @@ describe('AntaresProtocol', () => {
       })
 
       it('contains an entry on {resultsAsync} for each async renderer', () => {
-        expect.assertions(6)
+        expect.assertions(5)
 
         // set up a listener for testing
         const lastItem = antares.action$.first().toPromise()
@@ -243,7 +264,6 @@ describe('AntaresProtocol', () => {
           expect(item).toHaveProperty('resultsAsync')
           expect(item.resultsAsync).toBeInstanceOf(Map)
           expect(Array.from(item.resultsAsync.keys())).toContain('asyncYo')
-          expect(item.resultsAsync.get('asyncYo')).toBe(asyncReturnValue)
 
           // the observable of results' eventual first value is its 'unwrapped' value
           return item.resultsAsync
@@ -258,10 +278,11 @@ describe('AntaresProtocol', () => {
 
 /**** util functions below ****/
 const justTheAction = ({ action }: ActionStreamItem) => action
+const toAction = (x: any): Action => ({ type: 'wrapper', payload: x })
 const noRender = () => null
 const noSpecialValue = 'noSpecialValue'
 const syncReturnValue = 'syncReturnValue'
-const observableValue = 'observableValue'
+const observableValue = toAction('observableValue')
 const asyncReturnValue = of(observableValue).pipe(delay(1))
 const anyAction: Action = { type: 'any' }
 
@@ -272,5 +293,5 @@ const logFileAppender: Renderer = ({ action: { type, payload } }) => {
   const { fileName, content } = payload
   fs.appendFileSync(fileName, content + '\n', { encoding: 'UTF8' })
 
-  // a renderer need not provide a return value
+  // a synchronous renderer need not provide a return value
 }

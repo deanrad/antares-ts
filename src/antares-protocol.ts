@@ -1,7 +1,5 @@
 import { Subject, Observable, Observer, Subscription, Scheduler } from 'rxjs'
 
-// Import here Polyfills if needed. Recommended core-js (npm i -D core-js)
-
 export interface Action {
   type: string
   payload?: any
@@ -83,9 +81,10 @@ export class AntaresProtocol {
 
 export default AntaresProtocol
 
-function makeSafe(renderer: Renderer, mode: RenderMode, _name: String): SafeRenderer {
+const makeSafe = (renderer: Renderer, mode: RenderMode, _name: String): SafeRenderer => {
   return (item: ActionStreamItem) => {
     let result
+    let sideEffects
     let err
     try {
       // invoke the user-provided renderer, subscribing to its results if an Observable returned
@@ -101,7 +100,18 @@ function makeSafe(renderer: Renderer, mode: RenderMode, _name: String): SafeRend
       if (mode.toString() === 'sync') {
         item.results.set(_name, result || err)
       } else {
-        item.resultsAsync.set(_name, result || err)
+        // if our result is not subscribable, place a standin
+        sideEffects = result && result.subscribe ? result : Observable.empty()
+        sideEffects = sideEffects.share()
+        // 'share' the observable so its side effects cant happen twice
+        item.resultsAsync.set(_name, sideEffects)
+      }
+
+      // subscribe to async results - not more than once - so they do work
+      // TODO handle errors, feed back actions through antares.process
+      if (mode.toString() === 'async') {
+        // subscribing twice ought to be a noop
+        sideEffects.subscribe()
       }
     }
 
