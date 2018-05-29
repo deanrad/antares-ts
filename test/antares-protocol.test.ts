@@ -1,15 +1,21 @@
-import { AntaresProtocol, Action, ActionStreamItem, RenderMode } from '../src/antares-protocol'
-import fs from 'fs'
 import { default as faker } from 'faker'
-import { Observable, Subject, BehaviorSubject } from 'rxjs'
-import { map, skip, take, toArray } from 'rxjs/operators'
-import { debug } from 'util'
+import fs from 'fs'
+import { of } from 'rxjs/observable/of'
+import { delay, map, take, toArray } from 'rxjs/operators'
+import {
+  Action,
+  ActionStreamItem,
+  AntaresProtocol,
+  RenderMode,
+  Renderer
+} from '../src/antares-protocol'
 
-// wraps an it scenario and silences console messages during its executions
+// wraps an it scenario and silences console messages during its test-time executions
 const inSilence = itFn => {
   const callIt = done => {
     const _console = global.console
-    global.console = { log: jest.fn(), error: jest.fn() } // tslint:disable-line
+    Object.assign(global.console, { log: jest.fn(), error: jest.fn() })
+
     try {
       itFn(done)
     } catch (ex) {
@@ -44,7 +50,7 @@ describe('AntaresProtocol', () => {
 
     describe('#process', () => {
       it('accepts an action, and returns a promise', () => {
-        const result = antares.process({ type: 'SomeAction' })
+        const result = antares.process(anyAction)
         expect(result).toBeInstanceOf(Promise)
       })
     })
@@ -53,7 +59,7 @@ describe('AntaresProtocol', () => {
       it('accepts a function to be called upon processing of actions', () => {
         const renderer = jest.fn()
         const result = antares.subscribeRenderer(renderer)
-        const action = { type: 'Rando' }
+        const action = anyAction
 
         antares.process(action)
         expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ action }))
@@ -79,7 +85,7 @@ describe('AntaresProtocol', () => {
               throw new Error('unconditionally')
             })
             const doIt = () => {
-              antares.process({ type: 'any' })
+              antares.process(anyAction)
             }
             expect(doIt).toThrowErrorMatchingSnapshot()
           })
@@ -102,14 +108,14 @@ describe('AntaresProtocol', () => {
 
               // force error - in this event loop turn some renderers wont run
               try {
-                antares.process({ type: 'any' })
+                antares.process(anyAction)
               } catch (ex) {
                 expect(before).toHaveBeenCalled()
                 expect(after).not.toHaveBeenCalled()
               }
 
               const shouldntThrow = () => {
-                antares.process({ type: 'any' })
+                antares.process(anyAction)
               }
 
               // Process again, and the 2 non-throwing renderers are still subscribed
@@ -135,7 +141,7 @@ describe('AntaresProtocol', () => {
             )
 
             const doIt = () => {
-              antares.process({ type: 'any' })
+              antares.process(anyAction)
             }
 
             expect(doIt).not.toThrow()
@@ -147,7 +153,7 @@ describe('AntaresProtocol', () => {
     describe('#process', () => {
       it('returns a resolved promise', () => {
         expect.assertions(1)
-        const result = antares.process({ type: 'rando' })
+        const result = antares.process(anyAction)
         return expect(result).resolves.toBeTruthy()
       })
 
@@ -191,54 +197,59 @@ describe('AntaresProtocol', () => {
       })
 
       it('contains an entry on {results} for each synchronous renderer', () => {
-        expect.assertions(4)
+        expect.assertions(6)
 
-        // set up a listener for testing - a Subject whose .value is the last thing it observed
-        const lastItemSubject = new BehaviorSubject<ActionStreamItem>(null)
-        antares.action$.subscribe(lastItemSubject)
+        // set up a listener for testing
+        const lastItem = antares.action$.first().toPromise()
+        const renderFn = jest.fn().mockReturnValue(syncReturnValue)
 
-        // set up a normal renderer
-        antares.subscribeRenderer(item => noSpecialValue, {
+        // set up a renderer
+        antares.subscribeRenderer(renderFn, {
           name: 'rememberMyName',
           mode: RenderMode.sync
         })
 
-        // I have to admit I dont understand why '2' below - something to do w/ BehaviorSubject
-        const nextItem = lastItemSubject.pipe(take(2)).toPromise()
         // process an item
-        antares.process({ type: 'fooz' })
+        antares.process(anyAction)
 
-        return nextItem.then(item => {
+        // return an assertion
+        return lastItem.then(item => {
+          expect(renderFn).toHaveBeenCalledWith(item)
           expect(item).toHaveProperty('results')
           expect(item.results).toBeInstanceOf(Map)
           expect(Array.from(item.results.keys())).toContain('rememberMyName')
+          expect(item.results.get('rememberMyName')).toEqual('syncReturnValue')
           expect(item).toMatchSnapshot()
         })
       })
 
       it('contains an entry on {resultsAsync} for each async renderer', () => {
-        expect.assertions(4)
+        expect.assertions(6)
 
-        // set up a listener for testing - a Subject whose .value is the last thing it observed
-        const lastItemSubject = new BehaviorSubject<ActionStreamItem>(null)
-        antares.action$.subscribe(lastItemSubject)
-
-        // set up a normal renderer
-        antares.subscribeRenderer(item => noSpecialValue, {
+        // set up a listener for testing
+        const lastItem = antares.action$.first().toPromise()
+        const renderFn = jest.fn().mockReturnValue(asyncReturnValue)
+        // set up a renderer
+        antares.subscribeRenderer(renderFn, {
           name: 'asyncYo',
-          mode: RenderMode.sync
+          mode: RenderMode.async
         })
 
-        // I have to admit I dont understand why '2' below - something to do w/ BehaviorSubject
-        const nextItem = lastItemSubject.pipe(take(2)).toPromise()
         // process an item
-        antares.process({ type: 'fooz' })
+        antares.process(anyAction)
 
-        return nextItem.then(item => {
+        return lastItem.then(item => {
+          expect(renderFn).toHaveBeenCalledWith(item)
           expect(item).toHaveProperty('resultsAsync')
-          expect(item.results).toBeInstanceOf(Map)
-          expect(Array.from(item.results.keys())).toContain('asyncYo')
-          expect(item).toMatchSnapshot()
+          expect(item.resultsAsync).toBeInstanceOf(Map)
+          expect(Array.from(item.resultsAsync.keys())).toContain('asyncYo')
+          expect(item.resultsAsync.get('asyncYo')).toBe(asyncReturnValue)
+
+          // the observable of results' eventual first value is its 'unwrapped' value
+          return item.resultsAsync
+            .get('asyncYo')
+            .toPromise()
+            .then(unwrapped => expect(unwrapped).toEqual(observableValue))
         })
       })
     })
@@ -249,11 +260,17 @@ describe('AntaresProtocol', () => {
 const justTheAction = ({ action }: ActionStreamItem) => action
 const noRender = () => null
 const noSpecialValue = 'noSpecialValue'
+const syncReturnValue = 'syncReturnValue'
+const observableValue = 'observableValue'
+const asyncReturnValue = of(observableValue).pipe(delay(1))
+const anyAction: Action = { type: 'any' }
 
-const logFileAppender = ({ action: { type, payload } }) => {
+const logFileAppender: Renderer = ({ action: { type, payload } }) => {
   // Most renderers care about a subset of actions. Return early if you don't care.
   if (!type.match(/^File\./)) return
 
   const { fileName, content } = payload
-  return fs.appendFileSync(fileName, content + '\n', { encoding: 'UTF8' })
+  fs.appendFileSync(fileName, content + '\n', { encoding: 'UTF8' })
+
+  // a renderer need not provide a return value
 }

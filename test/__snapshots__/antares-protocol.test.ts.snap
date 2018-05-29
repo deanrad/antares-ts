@@ -3,22 +3,10 @@
 exports[`AntaresProtocol instance methods #action$ - the action stream contains an entry on {results} for each synchronous renderer 1`] = `
 Object {
   "action": Object {
-    "type": "fooz",
+    "type": "any",
   },
   "results": Map {
-    "rememberMyName" => "noSpecialValue",
-  },
-  "resultsAsync": Map {},
-}
-`;
-
-exports[`AntaresProtocol instance methods #action$ - the action stream contains an entry on {resultsAsync} for each async renderer 1`] = `
-Object {
-  "action": Object {
-    "type": "fooz",
-  },
-  "results": Map {
-    "asyncYo" => "noSpecialValue",
+    "rememberMyName" => "syncReturnValue",
   },
   "resultsAsync": Map {},
 }

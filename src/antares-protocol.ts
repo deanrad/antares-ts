@@ -65,20 +65,15 @@ export class AntaresProtocol {
 
   subscribeRenderer(
     renderer: Renderer,
-    { mode = RenderMode.sync, name }: RendererConfig = { mode: RenderMode.sync }
+    { mode = RenderMode.sync, name }: RendererConfig = {}
   ): Subscription {
     this._rendererCount += 1
     const _name = name || `renderer_${this._rendererCount}`
-    const subscribeTo =
-      mode === RenderMode.async ? this.action$.observeOn(Scheduler.async) : this.action$
 
-    const safeRenderer: SafeRenderer = (item: ActionStreamItem) => {
-      let result = renderer(item)
+    // we need the resultsAsync map entry to be set synchronously, so dont observeOn(async)!
+    const subscribeTo = this.action$
 
-      if (mode === RenderMode.sync) item.results.set(_name, result)
-      else item.resultsAsync.set(_name, result)
-      return result
-    }
+    const safeRenderer: SafeRenderer = makeSafe(renderer, mode, _name)
 
     const subscription = subscribeTo.subscribe(safeRenderer)
     this._rendererSubs.set(_name, subscription)
@@ -87,3 +82,29 @@ export class AntaresProtocol {
 }
 
 export default AntaresProtocol
+
+function makeSafe(renderer: Renderer, mode: RenderMode, _name: String): SafeRenderer {
+  return (item: ActionStreamItem) => {
+    let result
+    let err
+    try {
+      // invoke the user-provided renderer, subscribing to its results if an Observable returned
+      result = renderer(item)
+    } catch (ex) {
+      err = ex
+      if (mode.toString() === 'sync') {
+        // in sync mode, exceptions blow your stack
+        throw ex
+      }
+    } finally {
+      // always add the result to the appropriate place
+      if (mode.toString() === 'sync') {
+        item.results.set(_name, result || err)
+      } else {
+        item.resultsAsync.set(_name, result || err)
+      }
+    }
+
+    // theres no real reason for a return value
+  }
+}
