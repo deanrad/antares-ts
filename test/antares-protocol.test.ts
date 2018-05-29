@@ -171,15 +171,49 @@ describe('AntaresProtocol', () => {
             obsResult.subscribe()
             expect(subscribeCount).toEqual(1)
           })
+
+          it('will send returned actions back through #process', async () => {
+            // We'll process one action, but our renderer will return a consequence
+            // so we're interested in both actions
+            let nextTwo = antares.action$
+              .pipe(take(2), map(justTheAction))
+              .toArray()
+              .toPromise()
+
+            // subscribe a renderer that emits an action in response
+            antares.subscribeRenderer(
+              ({ action: { type } }) => {
+                // by emitting an action of a different type we won't infinite-loop
+                return type === anyAction.type && of({ type: 'consequentialAction' })
+              },
+              { mode: RenderMode.async, name: 'Johnny' }
+            )
+
+            antares.process(anyAction)
+            return expect(nextTwo).resolves.toMatchSnapshot()
+          })
         })
       })
     })
 
     describe('#process', () => {
-      it('returns a resolved promise', () => {
-        expect.assertions(1)
-        const result = antares.process(anyAction)
-        return expect(result).resolves.toBeTruthy()
+      describe('return value', () => {
+        it('is a resolved promise', () => {
+          expect.assertions(1)
+          const result = antares.process(anyAction)
+          return expect(result).resolves.toBeTruthy()
+        })
+
+        it('has #completed() property that is a promise for all async renders to be complete', () => {
+          expect.assertions(1)
+
+          const consequence = { type: 'asyncResult', payload: 2 }
+          antares.subscribeRenderer(() => of(2).pipe(delay(20)), { mode: RenderMode.async })
+          antares.subscribeRenderer(() => of(3).pipe(delay(10)), { mode: RenderMode.async })
+
+          const result = antares.process(anyAction)
+          return expect(result.completed()).resolves.toEqual([2, 3])
+        })
       })
 
       it('can be used to abstract the WHAT from the HOW', () => {
@@ -289,6 +323,7 @@ const syncReturnValue = 'syncReturnValue'
 const observableValue = toAction('observableValue')
 const asyncReturnValue = of(observableValue).pipe(delay(1))
 const anyAction: Action = { type: 'any' }
+const consequentialAction: Action = { type: 'consequntialAction' }
 
 const logFileAppender: Renderer = ({ action: { type, payload } }) => {
   // Most renderers care about a subset of actions. Return early if you don't care.

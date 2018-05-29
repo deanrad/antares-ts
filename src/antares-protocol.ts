@@ -1,4 +1,5 @@
 import { Subject, Observable, Observer, Subscription, Scheduler } from 'rxjs'
+import { forkJoin } from 'rxjs/observable/forkJoin'
 
 export interface Action {
   type: string
@@ -56,9 +57,18 @@ export class AntaresProtocol {
     const resultsAsync = new Map<String, Observable<any>>()
     const item = { action, results, resultsAsync }
 
-    // synchronous renderers will
+    // synchronous renderers will run, or explode, upon the next line
     this.subject.next(item)
-    return Promise.resolve(item)
+
+    const p = Promise.resolve(item)
+    Object.assign(p, {
+      completed(): Promise<any[]> {
+        const asyncObservables = item.resultsAsync.values()
+        const allDone = forkJoin(...Array.from(asyncObservables))
+        return allDone.toPromise()
+      }
+    })
+    return p
   }
 
   subscribeRenderer(
@@ -71,7 +81,7 @@ export class AntaresProtocol {
     // we need the resultsAsync map entry to be set synchronously, so dont observeOn(async)!
     const subscribeTo = this.action$
 
-    const safeRenderer: SafeRenderer = makeSafe(renderer, mode, _name)
+    const safeRenderer: SafeRenderer = makeSafe(renderer, mode, _name, this)
 
     const subscription = subscribeTo.subscribe(safeRenderer)
     this._rendererSubs.set(_name, subscription)
@@ -81,7 +91,12 @@ export class AntaresProtocol {
 
 export default AntaresProtocol
 
-const makeSafe = (renderer: Renderer, mode: RenderMode, _name: String): SafeRenderer => {
+const makeSafe = (
+  renderer: Renderer,
+  mode: RenderMode,
+  _name: String,
+  antares: AntaresProtocol
+): SafeRenderer => {
   return (item: ActionStreamItem) => {
     let result
     let sideEffects
@@ -110,8 +125,10 @@ const makeSafe = (renderer: Renderer, mode: RenderMode, _name: String): SafeRend
       // subscribe to async results - not more than once - so they do work
       // TODO handle errors, feed back actions through antares.process
       if (mode.toString() === 'async') {
-        // subscribing twice ought to be a noop
-        sideEffects.subscribe()
+        // sideEffects.subscribe()
+        sideEffects.subscribe((action: Action) => {
+          antares.process(action)
+        })
       }
     }
 

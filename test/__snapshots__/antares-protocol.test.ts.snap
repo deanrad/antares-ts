@@ -29,6 +29,17 @@ Array [
 ]
 `;
 
+exports[`AntaresProtocol instance methods #subscribeRenderer async (batch) mode happy path will send returned actions back through #process 1`] = `
+Array [
+  Object {
+    "type": "any",
+  },
+  Object {
+    "type": "consequentialAction",
+  },
+]
+`;
+
 exports[`AntaresProtocol instance methods #subscribeRenderer defaults naming a renderer 'renderer_N' 1`] = `
 Array [
   "JohnnyNull",
