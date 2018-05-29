@@ -152,7 +152,7 @@ describe('AntaresProtocol', () => {
 
         describe('happy path', () => {
           it('will run the renderer only once', async () => {
-            expect.assertions(2)
+            expect.assertions(3)
 
             // a function returning an observable we wouldn't want subscribed multiply
             let subscribeCount = 0
@@ -162,9 +162,13 @@ describe('AntaresProtocol', () => {
               })
             antares.subscribeRenderer(returnsObs, { name: 'FooAsync', mode: RenderMode.async })
 
+            // note: awaiting the return of `process` doesnt/shouldn't await asynchronous renderers!
             const { resultsAsync } = await antares.process(anyAction)
             const obsResult = resultsAsync.get('FooAsync')
             expect(obsResult).toBeInstanceOf(Observable)
+            expect(subscribeCount).toEqual(1)
+            // calling subscribe on it directly does nothing - its shared!
+            obsResult.subscribe()
             expect(subscribeCount).toEqual(1)
           })
         })
