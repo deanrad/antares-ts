@@ -1,4 +1,4 @@
-import { Subject, Observable, Observer, Subscription, Scheduler } from 'rxjs'
+import { Observable, Subject, Subscription } from 'rxjs'
 import { forkJoin } from 'rxjs/observable/forkJoin'
 
 export interface Action {
@@ -91,47 +91,76 @@ export class AntaresProtocol {
 
 export default AntaresProtocol
 
-const makeSafe = (
+function makeSafe(
+  renderer: Renderer,
+  mode: RenderMode,
+  _name: String,
+  antares: AntaresProtocol
+): SafeRenderer {
+  const target = mode.toString() === 'sync' ? makeSafeSync : makeSafeAsync
+
+  return target(renderer, mode, _name, antares)
+}
+
+const makeSafeSync = (
   renderer: Renderer,
   mode: RenderMode,
   _name: String,
   antares: AntaresProtocol
 ): SafeRenderer => {
-  return (item: ActionStreamItem) => {
+  const safeSyncRenderer = (item: ActionStreamItem) => {
     let result
-    let sideEffects
     let err
+
     try {
-      // invoke the user-provided renderer, subscribing to its results if an Observable returned
       result = renderer(item)
     } catch (ex) {
       err = ex
-      if (mode.toString() === 'sync') {
-        // in sync mode, exceptions blow your stack
-        throw ex
-      }
+      throw ex
     } finally {
-      // always add the result to the appropriate place
-      if (mode.toString() === 'sync') {
-        item.results.set(_name, result || err)
-      } else {
-        // if our result is not subscribable, place a standin
-        sideEffects = result && result.subscribe ? result : Observable.empty()
-        sideEffects = sideEffects.share()
-        // 'share' the observable so its side effects cant happen twice
-        item.resultsAsync.set(_name, sideEffects)
-      }
-
-      // subscribe to async results - not more than once - so they do work
-      // TODO handle errors, feed back actions through antares.process
-      if (mode.toString() === 'async') {
-        // sideEffects.subscribe()
-        sideEffects.subscribe((action: Action) => {
-          antares.process(action)
-        })
-      }
+      item.results.set(_name, result || err)
     }
-
-    // theres no real reason for a return value
   }
+
+  return safeSyncRenderer
+}
+
+const makeSafeAsync = (
+  renderer: Renderer,
+  mode: RenderMode,
+  _name: String,
+  antares: AntaresProtocol
+): SafeRenderer => {
+  const safeAsyncRenderer = (item: ActionStreamItem) => {
+    let result
+    let err
+
+    try {
+      result = renderer(item)
+    } catch (ex) {
+      err = ex
+      // no throwing in async mode! TODO -what?
+      console.error(ex.message)
+    } finally {
+      const singletonSideEffects = prepareSideEffects(result, antares)
+      item.resultsAsync.set(_name, singletonSideEffects || err)
+    }
+  }
+
+  return safeAsyncRenderer
+}
+
+const prepareSideEffects = (result: Observable<Action>, antares: AntaresProtocol) => {
+  // if our result is not subscribable, place a standin
+  let sideEffects = result && result.subscribe ? result : Observable.empty<Action>()
+  // 'share' the observable so its side effects cant happen twice
+  sideEffects = sideEffects.share()
+
+  // make sure the side effects are processed, by subscribing
+  // and that the actions the SEs return are processed - TODO ideally async
+  sideEffects.subscribe((action: Action) => {
+    antares.process(action)
+  })
+
+  return sideEffects
 }
