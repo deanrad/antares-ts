@@ -57,7 +57,7 @@ describe('AntaresProtocol', () => {
         // not an actual promise, but thenable nevertheless
         expect(result).toBeInstanceOf(ProcessResult)
 
-        const thenableResult = result.then(r => r).catch(() => {
+        const thenableResult = result.catch(() => {
           throw new Error('#process doesnt reject, this wont appear')
         })
 

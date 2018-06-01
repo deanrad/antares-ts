@@ -25,7 +25,5 @@ exec("git add .")
 exec('git config user.name "Dean Radcliffe"')
 exec('git config user.email "deanmisc@yahoo.com"')
 exec('git commit -m "docs(docs): update gh-pages"')
-exec(
-  `git push --force --quiet "https://${ghToken}@${repository}" master:gh-pages`
-)
+exec(`git push --force --quiet "https://${ghToken}@${repository}" master:gh-pages`)
 echo("Docs deployed!!")

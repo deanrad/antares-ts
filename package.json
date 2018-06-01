@@ -34,8 +34,16 @@
     "precommit": "lint-staged",
     "travis-deploy-once": "travis-deploy-once",
     "prepush": "npm run test:prod && npm run build",
-    "commitmsg": "validate-commit-msg"
+    "commitmsg": "validate-commit-msg",
+    "size": "size-limit"
   },
+  "size-limit": [
+    {
+      "path": "dist/antares-protocol.es5.js",
+      "limit": "135 KB",
+      "webpack": false
+    }
+  ],
   "lint-staged": {
     "{src,test}/**/*.ts": [
       "prettier --write --no-semi --single-quote",
@@ -94,11 +102,13 @@
     "rimraf": "^2.6.1",
     "rollup": "^0.59.0",
     "rollup-plugin-commonjs": "^9.0.0",
+    "rollup-plugin-gzip": "^1.3.0",
     "rollup-plugin-json": "^3.0.0",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-typescript2": "^0.14.0",
     "semantic-release": "^15.4.1",
+    "size-limit": "^0.18.1",
     "travis-deploy-once": "^5.0.0",
     "ts-jest": "^22.0.0",
     "ts-node": "^6.0.0",
