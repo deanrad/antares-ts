@@ -7,6 +7,7 @@ import {
   Action,
   ActionStreamItem,
   AntaresProtocol,
+  ProcessResult,
   RenderMode,
   Renderer
 } from '../src/antares-protocol'
@@ -50,9 +51,18 @@ describe('AntaresProtocol', () => {
     })
 
     describe('#process', () => {
-      it('accepts an action, and returns a promise', () => {
+      it('accepts an action, and returns a promise for an ActionStream item', () => {
+        expect.assertions(2)
         const result = antares.process(anyAction)
-        expect(result).toBeInstanceOf(Promise)
+        // not an actual promise, but thenable nevertheless
+        expect(result).toBeInstanceOf(ProcessResult)
+
+        const thenableResult = result.then(r => r).catch(() => {
+          throw new Error('#process doesnt reject, this wont appear')
+        })
+
+        // the resolved value will have all the properties of an ActionStreamItem
+        return expect(thenableResult).resolves.toMatchSnapshot()
       })
     })
 

@@ -40,6 +40,36 @@ export interface RendererConfig {
   name?: String
 }
 
+/**
+ * @description A promise for when the action has been processed
+ */
+export class ProcessResult implements Promise<ActionStreamItem> {
+  [Symbol.toStringTag]: 'Promise'
+  constructor(private _item: ActionStreamItem) {}
+
+  completed(): Promise<any[]> {
+    const asyncObservables = this._item.resultsAsync.values()
+    const allDone = forkJoin(...Array.from(asyncObservables))
+    return allDone.toPromise()
+  }
+
+  then<TResult1 = ActionStreamItem, TResult2 = never>(
+    onfulfilled?:
+      | ((value: ActionStreamItem) => TResult1 | PromiseLike<TResult1>)
+      | null
+      | undefined,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null | undefined
+  ): Promise<TResult1 | TResult2> {
+    return Promise.resolve(this._item).then(onfulfilled, onrejected)
+  }
+
+  catch<TResult = never>(
+    onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null | undefined
+  ): Promise<ActionStreamItem | TResult> {
+    return Promise.resolve(this._item).catch(onrejected)
+  }
+}
+
 export class AntaresProtocol {
   subject: Subject<ActionStreamItem>
   action$: Observable<ActionStreamItem>
@@ -52,7 +82,7 @@ export class AntaresProtocol {
     this._rendererSubs = new Map<String, Subscription>()
   }
 
-  process(action: Action): Promise<ActionStreamItem> {
+  process(action: Action): ProcessResult {
     const results = new Map<String, any>()
     const resultsAsync = new Map<String, Observable<any>>()
     const item = { action, results, resultsAsync }
@@ -60,15 +90,7 @@ export class AntaresProtocol {
     // synchronous renderers will run, or explode, upon the next line
     this.subject.next(item)
 
-    const p = Promise.resolve(item)
-    Object.assign(p, {
-      completed(): Promise<any[]> {
-        const asyncObservables = item.resultsAsync.values()
-        const allDone = forkJoin(...Array.from(asyncObservables))
-        return allDone.toPromise()
-      }
-    })
-    return p
+    return new ProcessResult(item)
   }
 
   subscribeRenderer(
@@ -139,7 +161,7 @@ const makeSafeAsync = (
       result = renderer(item)
     } catch (ex) {
       err = ex
-      // no throwing in async mode! TODO -what?
+      // no throwing in async mode! TODO -what to do then?
       console.error(ex.message)
     } finally {
       const singletonSideEffects = prepareSideEffects(result, antares)

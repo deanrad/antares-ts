@@ -23,6 +23,16 @@ Array [
 ]
 `;
 
+exports[`AntaresProtocol instance methods #process accepts an action, and returns a promise for an ActionStream item 1`] = `
+Object {
+  "action": Object {
+    "type": "any",
+  },
+  "results": Map {},
+  "resultsAsync": Map {},
+}
+`;
+
 exports[`AntaresProtocol instance methods #subscribeRenderer accepts { name:String } on the config object 1`] = `
 Array [
   "JohnnyNull",
