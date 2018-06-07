@@ -164,8 +164,8 @@ const makeSafeAsync = (
       // no throwing in async mode! TODO -what to do then?
       console.error(ex.message)
     } finally {
-      const singletonSideEffects = prepareSideEffects(result, antares)
-      item.resultsAsync.set(_name, singletonSideEffects || err)
+      const singletonSideEffects = prepareSideEffects(result, antares) // jest is declaring the next line uncovered when its not
+      /* istanbul ignore next */ item.resultsAsync.set(_name, singletonSideEffects || err)
     }
   }
 

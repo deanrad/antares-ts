@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AntaresProtocol instance methods #process accepts an action, and returns a promise for an ActionStream item 1`] = `
+exports[`AntaresProtocol #process accepts an action, and returns a promise for an ActionStream item 1`] = `
 Object {
   "action": Object {
     "type": "any",
@@ -10,13 +10,13 @@ Object {
 }
 `;
 
-exports[`AntaresProtocol instance methods #subscribeRenderer accepts { name:String } on the config object 1`] = `
+exports[`AntaresProtocol #subscribeRenderer accepts { name:String } on the config object 1`] = `
 Array [
   "JohnnyNull",
 ]
 `;
 
-exports[`AntaresProtocol instance methods #subscribeRenderer async (batch) mode happy path will send returned actions back through #process 1`] = `
+exports[`AntaresProtocol #subscribeRenderer async (batch) mode happy path will send returned actions back through #process 1`] = `
 Array [
   Object {
     "type": "any",
@@ -27,7 +27,7 @@ Array [
 ]
 `;
 
-exports[`AntaresProtocol instance methods #subscribeRenderer contains an entry on {results} for each synchronous renderer 1`] = `
+exports[`AntaresProtocol #subscribeRenderer contains an entry on {results} for each synchronous renderer 1`] = `
 Object {
   "action": Object {
     "type": "any",
@@ -39,7 +39,7 @@ Object {
 }
 `;
 
-exports[`AntaresProtocol instance methods #subscribeRenderer defaults naming a renderer 'renderer_N' 1`] = `
+exports[`AntaresProtocol #subscribeRenderer defaults naming a renderer 'renderer_N' 1`] = `
 Array [
   "JohnnyNull",
   "renderer_2",
@@ -47,7 +47,7 @@ Array [
 ]
 `;
 
-exports[`AntaresProtocol instance methods #subscribeRenderer exposes each processed action 1`] = `
+exports[`AntaresProtocol #subscribeRenderer exposes each processed action 1`] = `
 Array [
   Object {
     "type": "rando 1",
@@ -58,4 +58,4 @@ Array [
 ]
 `;
 
-exports[`AntaresProtocol instance methods #subscribeRenderer synchronous (online) mode a renderer error propogates up to the caller of #process 1`] = `"unconditionally"`;
+exports[`AntaresProtocol #subscribeRenderer synchronous (online) mode a renderer error propogates up to the caller of #process 1`] = `"unconditionally"`;
