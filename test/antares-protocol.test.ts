@@ -30,12 +30,12 @@ const inSilence = itFn => {
   // preserve arity in returned fn
   return itFn.length === 1 ? done => callIt(done) : () => callIt(undefined)
 }
-// Sanity check
 describe('AntaresProtocol', () => {
+  // Sanity check
   it('is instantiable', () => {
     expect(new AntaresProtocol()).toBeInstanceOf(AntaresProtocol)
   })
-  it('has process, subscribeRenderer methods', () => {
+  it('has instance methods', () => {
     const antares = new AntaresProtocol()
     expect(antares).toMatchObject({
       process: expect.any(Function),
@@ -63,6 +63,45 @@ describe('AntaresProtocol', () => {
 
         // the resolved value will have all the properties of an ActionStreamItem
         return expect(thenableResult).resolves.toMatchSnapshot()
+      })
+      describe('return value', () => {
+        it('is a resolved promise', () => {
+          expect.assertions(1)
+          const result = antares.process(anyAction)
+          return expect(result).resolves.toBeTruthy()
+        })
+
+        it('has #completed() property that is a promise for all async renders to be complete', () => {
+          expect.assertions(1)
+
+          const consequence = { type: 'asyncResult', payload: 2 }
+          antares.subscribeRenderer(() => of(2).pipe(delay(20)), { mode: RenderMode.async })
+          antares.subscribeRenderer(() => of(3).pipe(delay(10)), { mode: RenderMode.async })
+
+          const result = antares.process(anyAction)
+          return expect(result.completed()).resolves.toEqual([2, 3])
+        })
+      })
+
+      it('can be used to abstract the WHAT from the HOW', () => {
+        const bizTalk = faker.fake('{{company.bsBuzz}} {{company.bsAdjective}} {{company.bsNoun}}')
+
+        expect.assertions(1)
+
+        const action = {
+          type: 'File.append',
+          payload: {
+            fileName: 'antares.test.log',
+            content: bizTalk
+          }
+        }
+
+        antares.subscribeRenderer(logFileAppender)
+        antares.process(action)
+
+        // Because we subscribed our renderer synchronously, we can expect the
+        // text was written to the file.
+        expect(fs.readFileSync(action.payload.fileName, 'UTF8')).toMatch(bizTalk)
       })
     })
 
@@ -276,52 +315,10 @@ describe('AntaresProtocol', () => {
         })
       })
     })
-
-    describe('#process', () => {
-      describe('return value', () => {
-        it('is a resolved promise', () => {
-          expect.assertions(1)
-          const result = antares.process(anyAction)
-          return expect(result).resolves.toBeTruthy()
-        })
-
-        it('has #completed() property that is a promise for all async renders to be complete', () => {
-          expect.assertions(1)
-
-          const consequence = { type: 'asyncResult', payload: 2 }
-          antares.subscribeRenderer(() => of(2).pipe(delay(20)), { mode: RenderMode.async })
-          antares.subscribeRenderer(() => of(3).pipe(delay(10)), { mode: RenderMode.async })
-
-          const result = antares.process(anyAction)
-          return expect(result.completed()).resolves.toEqual([2, 3])
-        })
-      })
-
-      it('can be used to abstract the WHAT from the HOW', () => {
-        const bizTalk = faker.fake('{{company.bsBuzz}} {{company.bsAdjective}} {{company.bsNoun}}')
-
-        expect.assertions(1)
-
-        const action = {
-          type: 'File.append',
-          payload: {
-            fileName: 'antares.test.log',
-            content: bizTalk
-          }
-        }
-
-        antares.subscribeRenderer(logFileAppender)
-        antares.process(action)
-
-        // Because we subscribed our renderer synchronously, we can expect the
-        // text was written to the file.
-        expect(fs.readFileSync(action.payload.fileName, 'UTF8')).toMatch(bizTalk)
-      })
-    })
   })
 })
 
-/**** util functions below ****/
+//#region Util Functions Below
 const justTheAction = ({ action }: ActionStreamItem) => action
 const toAction = (x: any): Action => ({ type: 'wrapper', payload: x })
 const noRender = () => null
@@ -331,7 +328,6 @@ const observableValue = toAction('observableValue')
 const asyncReturnValue = of(observableValue).pipe(delay(1))
 const anyAction: Action = { type: 'any' }
 const consequentialAction: Action = { type: 'consequntialAction' }
-
 const logFileAppender: Renderer = ({ action: { type, payload } }) => {
   // Most renderers care about a subset of actions. Return early if you don't care.
   if (!type.match(/^File\./)) return
@@ -341,3 +337,4 @@ const logFileAppender: Renderer = ({ action: { type, payload } }) => {
 
   // a synchronous renderer need not provide a return value
 }
+//#endregion
