@@ -88,6 +88,77 @@ describe('AntaresProtocol', () => {
         expect(rendererNames).toContain('renderer_2')
         expect(rendererNames).toMatchSnapshot()
       })
+      it('exposes each processed action', () => {
+        expect.assertions(1)
+        const randomActions = [{ type: 'rando 1' }, { type: 'rando 2' }]
+
+        // get a promise for all seen actions from now, as an array
+        const lastTwoActions = antares.action$
+          .pipe(take(2), map(justTheAction), toArray())
+          .toPromise()
+
+        // process actions
+        randomActions.forEach(a => antares.process(a))
+
+        // expect the resolved value toEqual our randomActions
+        return expect(lastTwoActions).resolves.toMatchSnapshot()
+      })
+
+      it('contains an entry on {results} for each synchronous renderer', () => {
+        expect.assertions(6)
+
+        // set up a listener for testing
+        const lastItem = antares.action$.first().toPromise()
+        const renderFn = jest.fn().mockReturnValue(syncReturnValue)
+
+        // set up a renderer
+        antares.subscribeRenderer(renderFn, {
+          name: 'rememberMyName',
+          mode: RenderMode.sync
+        })
+
+        // process an item
+        antares.process(anyAction)
+
+        // return an assertion
+        return lastItem.then(item => {
+          expect(renderFn).toHaveBeenCalledWith(item)
+          expect(item).toHaveProperty('results')
+          expect(item.results).toBeInstanceOf(Map)
+          expect(Array.from(item.results.keys())).toContain('rememberMyName')
+          expect(item.results.get('rememberMyName')).toEqual('syncReturnValue')
+          expect(item).toMatchSnapshot()
+        })
+      })
+
+      it('contains an entry on {resultsAsync} for each async renderer', () => {
+        expect.assertions(5)
+
+        // set up a listener for testing
+        const lastItem = antares.action$.first().toPromise()
+        const renderFn = jest.fn().mockReturnValue(asyncReturnValue)
+        // set up a renderer
+        antares.subscribeRenderer(renderFn, {
+          name: 'asyncYo',
+          mode: RenderMode.async
+        })
+
+        // process an item
+        antares.process(anyAction)
+
+        return lastItem.then(item => {
+          expect(renderFn).toHaveBeenCalledWith(item)
+          expect(item).toHaveProperty('resultsAsync')
+          expect(item.resultsAsync).toBeInstanceOf(Map)
+          expect(Array.from(item.resultsAsync.keys())).toContain('asyncYo')
+
+          // the observable of results' eventual first value is its 'unwrapped' value
+          return item.resultsAsync
+            .get('asyncYo')
+            .toPromise()
+            .then(unwrapped => expect(unwrapped).toEqual(observableValue))
+        })
+      })
 
       describe('synchronous (online) mode', () => {
         describe('a renderer error', () => {
@@ -245,80 +316,6 @@ describe('AntaresProtocol', () => {
         // Because we subscribed our renderer synchronously, we can expect the
         // text was written to the file.
         expect(fs.readFileSync(action.payload.fileName, 'UTF8')).toMatch(bizTalk)
-      })
-    })
-
-    describe('#action$ - the action stream', () => {
-      it('exposes each processed action', () => {
-        expect.assertions(1)
-        const randomActions = [{ type: 'rando 1' }, { type: 'rando 2' }]
-
-        // get a promise for all seen actions from now, as an array
-        const lastTwoActions = antares.action$
-          .pipe(take(2), map(justTheAction), toArray())
-          .toPromise()
-
-        // process actions
-        randomActions.forEach(a => antares.process(a))
-
-        // expect the resolved value toEqual our randomActions
-        return expect(lastTwoActions).resolves.toMatchSnapshot()
-      })
-
-      it('contains an entry on {results} for each synchronous renderer', () => {
-        expect.assertions(6)
-
-        // set up a listener for testing
-        const lastItem = antares.action$.first().toPromise()
-        const renderFn = jest.fn().mockReturnValue(syncReturnValue)
-
-        // set up a renderer
-        antares.subscribeRenderer(renderFn, {
-          name: 'rememberMyName',
-          mode: RenderMode.sync
-        })
-
-        // process an item
-        antares.process(anyAction)
-
-        // return an assertion
-        return lastItem.then(item => {
-          expect(renderFn).toHaveBeenCalledWith(item)
-          expect(item).toHaveProperty('results')
-          expect(item.results).toBeInstanceOf(Map)
-          expect(Array.from(item.results.keys())).toContain('rememberMyName')
-          expect(item.results.get('rememberMyName')).toEqual('syncReturnValue')
-          expect(item).toMatchSnapshot()
-        })
-      })
-
-      it('contains an entry on {resultsAsync} for each async renderer', () => {
-        expect.assertions(5)
-
-        // set up a listener for testing
-        const lastItem = antares.action$.first().toPromise()
-        const renderFn = jest.fn().mockReturnValue(asyncReturnValue)
-        // set up a renderer
-        antares.subscribeRenderer(renderFn, {
-          name: 'asyncYo',
-          mode: RenderMode.async
-        })
-
-        // process an item
-        antares.process(anyAction)
-
-        return lastItem.then(item => {
-          expect(renderFn).toHaveBeenCalledWith(item)
-          expect(item).toHaveProperty('resultsAsync')
-          expect(item.resultsAsync).toBeInstanceOf(Map)
-          expect(Array.from(item.resultsAsync.keys())).toContain('asyncYo')
-
-          // the observable of results' eventual first value is its 'unwrapped' value
-          return item.resultsAsync
-            .get('asyncYo')
-            .toPromise()
-            .then(unwrapped => expect(unwrapped).toEqual(observableValue))
-        })
       })
     })
   })
