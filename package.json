@@ -35,7 +35,9 @@
     "travis-deploy-once": "travis-deploy-once",
     "prepush": "npm run test:prod && npm run build",
     "commitmsg": "validate-commit-msg",
-    "size": "size-limit"
+    "size": "size-limit",
+    "demos": "node demos/index",
+    "demos:test": "jest --testRegex=\"/demos/test\\.(ts|tsx|js)$\""
   },
   "size-limit": [
     {

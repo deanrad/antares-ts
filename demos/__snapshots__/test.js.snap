@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`writeFileDemo should write to stdout 1`] = `
+"TODO write file
+"
+`;
