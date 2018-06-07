@@ -1,5 +1,5 @@
-import { Observable, Subject, Subscription } from 'rxjs'
-import { forkJoin } from 'rxjs/observable/forkJoin'
+import { Observable, Subject, Subscription } from "rxjs"
+import { forkJoin } from "rxjs/observable/forkJoin"
 
 export interface Action {
   type: string
@@ -31,8 +31,8 @@ export interface SafeRenderer {
 }
 
 export enum RenderMode {
-  sync = 'sync',
-  async = 'async'
+  sync = "sync",
+  async = "async"
 }
 
 export interface RendererConfig {
@@ -44,7 +44,7 @@ export interface RendererConfig {
  * @description A promise for when the action has been processed
  */
 export class ProcessResult implements Promise<ActionStreamItem> {
-  [Symbol.toStringTag]: 'Promise'
+  [Symbol.toStringTag]: "Promise"
   constructor(private _item: ActionStreamItem) {}
 
   completed(): Promise<any[]> {
@@ -119,7 +119,7 @@ function makeSafe(
   _name: String,
   antares: AntaresProtocol
 ): SafeRenderer {
-  const target = mode.toString() === 'sync' ? makeSafeSync : makeSafeAsync
+  const target = mode.toString() === "sync" ? makeSafeSync : makeSafeAsync
 
   return target(renderer, mode, _name, antares)
 }
