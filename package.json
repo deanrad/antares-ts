@@ -43,7 +43,7 @@
   "size-limit": [
     {
       "path": "dist/antares-protocol.es5.js",
-      "limit": "135 KB",
+      "limit": "55 KB",
       "webpack": false
     }
   ],
