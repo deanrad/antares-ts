@@ -1,18 +1,33 @@
-const Demos = {
-    writeFileDemo: require('./01-write-file')
+const Demos = require("./configs")
+
+let output = ""
+const appendLine = s => {
+  output = output + `${s}\n`
 }
+const append = s => {
+  output += s
+}
+const log = appendLine
 
-let output = ''
-const appendLine = (s) => {output = output + `${s}\n`}
-const append = (s) => { output += s }
+describe("All Demos", () => {
+  beforeEach(() => {
+    output = ""
+  })
+  describe("writeFileDemo", () => {
+    it("should work synchronously", async () => {
+      const [demoFn, config] = Demos.writeFileSync
 
-describe("writeFileDemo", () => {
-    it("should write a file")
-    it("should write to stdout", async () => {
-        const subject = Demos.writeFileDemo
-        const stdout = {write: jest.fn(appendLine)}
-        await subject({ stdout })
-        
-        expect(output).toMatchSnapshot()
+      await demoFn({ config, log })
+
+      expect(output).toMatchSnapshot()
     })
+
+    xit("should work asynchronously", async () => {
+      const [demoFn, config] = Demos.writeFileAsync
+
+      await demoFn({ config, log })
+
+      expect(output).toMatchSnapshot()
+    })
+  })
 })

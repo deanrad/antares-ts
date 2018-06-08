@@ -1,5 +1,5 @@
-import { Observable, Subject, Subscription } from "rxjs"
-import { forkJoin } from "rxjs/observable/forkJoin"
+import { Observable, Subject, Subscription, asyncScheduler, forkJoin, empty } from "rxjs"
+import { observeOn, share } from "rxjs/operators"
 
 export interface Action {
   type: string
@@ -100,8 +100,8 @@ export class AntaresProtocol {
     this._rendererCount += 1
     const _name = name || `renderer_${this._rendererCount}`
 
-    // we need the resultsAsync map entry to be set synchronously, so dont observeOn(async)!
-    const subscribeTo = this.action$
+    const subscribeTo =
+      mode.toString() === "sync" ? this.action$ : this.action$.pipe(observeOn(asyncScheduler))
 
     const safeRenderer: SafeRenderer = makeSafe(renderer, mode, _name, this)
 
@@ -174,9 +174,9 @@ const makeSafeAsync = (
 
 const prepareSideEffects = (result: Observable<Action>, antares: AntaresProtocol) => {
   // if our result is not subscribable, place a standin
-  let sideEffects = result && result.subscribe ? result : Observable.empty<Action>()
+  let sideEffects = result && result.subscribe ? result : empty()
   // 'share' the observable so its side effects cant happen twice
-  sideEffects = sideEffects.share()
+  sideEffects = sideEffects.pipe(share())
 
   // make sure the side effects are processed, by subscribing
   // and that the actions the SEs return are processed - TODO ideally async

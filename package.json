@@ -37,7 +37,7 @@
     "commitmsg": "validate-commit-msg",
     "size": "size-limit",
     "demos": "node demos/index",
-    "demos:test": "jest --testRegex=\"/demos/test\\.(ts|tsx|js)$\"",
+    "demos:test": "jest --coverage false --testRegex=\"/demos/test\\.(ts|tsx|js)$\"",
     "demos:interactive": "node demos/index --interactive"
   },
   "size-limit": [

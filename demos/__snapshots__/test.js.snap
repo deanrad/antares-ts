@@ -1,6 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`writeFileDemo should write to stdout 1`] = `
-"TODO write file
+exports[`All Demos writeFileDemo should work asynchronously 1`] = `
+"Got some data for file ./demos/scratch/actors.md: Jake Weary
+Processing action Actor.save
+No more to do?
+OK Bye!
+File contains: - Jake Weary
+"
+`;
+
+exports[`All Demos writeFileDemo should work synchronously 1`] = `
+"Got some data for file ./demos/scratch/actors.md: Jake Weary
+Processing action Actor.save
+File contains: - Jake Weary
+No more to do?
+OK Bye!
 "
 `;
