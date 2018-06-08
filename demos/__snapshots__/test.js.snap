@@ -3,17 +3,16 @@
 exports[`All Demos writeFileDemo should work asynchronously 1`] = `
 "Got some data for file ./demos/scratch/actors.md: Jake Weary
 Processing action Actor.save
-No more to do?
+Done processing - No more to do?
 OK Bye!
-File contains: - Jake Weary
 "
 `;
 
 exports[`All Demos writeFileDemo should work synchronously 1`] = `
 "Got some data for file ./demos/scratch/actors.md: Jake Weary
 Processing action Actor.save
-File contains: - Jake Weary
-No more to do?
+File now contains: - Jake Weary
+Done processing - No more to do?
 OK Bye!
 "
 `;
