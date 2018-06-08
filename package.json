@@ -37,7 +37,8 @@
     "commitmsg": "validate-commit-msg",
     "size": "size-limit",
     "demos": "node demos/index",
-    "demos:test": "jest --testRegex=\"/demos/test\\.(ts|tsx|js)$\""
+    "demos:test": "jest --testRegex=\"/demos/test\\.(ts|tsx|js)$\"",
+    "demos:interactive": "node demos/index --interactive"
   },
   "size-limit": [
     {
@@ -95,6 +96,7 @@
     "cz-conventional-changelog": "^2.0.0",
     "faker": "^4.1.0",
     "husky": "^0.14.0",
+    "inquirer": "^6.0.0",
     "jest": "^22.0.2",
     "lint-staged": "^7.1.0",
     "lodash.camelcase": "^4.3.0",

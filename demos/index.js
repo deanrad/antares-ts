@@ -6,8 +6,9 @@ const Demos = {
 const process = require('process')
 const { stdout } = process
 const { log } = console
+const interactive = ["--interactive", "-i"].includes(process.argv[2])
 
 for(let demo of Object.values(Demos)) {
-    demo({stdout, log})
+    demo({stdout, log, interactive})
 
 }
