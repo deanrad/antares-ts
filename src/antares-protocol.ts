@@ -1,76 +1,20 @@
-import { Observable, Subject, Subscription, asyncScheduler, forkJoin, empty } from "rxjs"
-import { observeOn, share } from "rxjs/operators"
+import { Observable, Subject, Subscription, asyncScheduler, forkJoin } from "rxjs"
+import { observeOn } from "rxjs/operators"
+import { makeSafe, reservedRendererNames } from "./renderers"
+import {
+  APMethods,
+  Action,
+  ActionStreamItem,
+  ProcessResult,
+  RenderMode,
+  Renderer,
+  RendererConfig,
+  SafeRenderer
+} from "./types"
 
-export interface Action {
-  type: string
-  payload?: any
-  error?: boolean
-  meta?: Object
-}
+export * from "./types"
 
-export interface ActionStreamItem {
-  action: Action
-  results: Map<String, any>
-  resultsAsync: Map<String, Observable<any>>
-}
-
-export interface SyncRenderer {
-  (item: ActionStreamItem): any
-}
-
-export interface AsyncRenderer {
-  (item: ActionStreamItem): Observable<Action>
-}
-
-export interface Renderer {
-  (item: ActionStreamItem): any
-}
-
-export interface SafeRenderer {
-  (item: ActionStreamItem): any
-}
-
-export enum RenderMode {
-  sync = "sync",
-  async = "async"
-}
-
-export interface RendererConfig {
-  mode?: RenderMode
-  name?: String
-}
-
-/**
- * @description A promise for when the action has been processed
- */
-export class ProcessResult implements Promise<ActionStreamItem> {
-  [Symbol.toStringTag]: "Promise"
-  constructor(private _item: ActionStreamItem) {}
-
-  completed(): Promise<any[]> {
-    const asyncObservables = this._item.resultsAsync.values()
-    const allDone = forkJoin(...Array.from(asyncObservables))
-    return allDone.toPromise()
-  }
-
-  then<TResult1 = ActionStreamItem, TResult2 = never>(
-    onfulfilled?:
-      | ((value: ActionStreamItem) => TResult1 | PromiseLike<TResult1>)
-      | null
-      | undefined,
-    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null | undefined
-  ): Promise<TResult1 | TResult2> {
-    return Promise.resolve(this._item).then(onfulfilled, onrejected)
-  }
-
-  catch<TResult = never>(
-    onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null | undefined
-  ): Promise<ActionStreamItem | TResult> {
-    return Promise.resolve(this._item).catch(onrejected)
-  }
-}
-
-export class AntaresProtocol {
+export class AntaresProtocol implements APMethods {
   subject: Subject<ActionStreamItem>
   action$: Observable<ActionStreamItem>
   _rendererSubs: Map<String, Subscription>
@@ -90,99 +34,50 @@ export class AntaresProtocol {
     // synchronous renderers will run, or explode, upon the next line
     this.subject.next(item)
 
-    return new ProcessResult(item)
+    // Hack - check for any closed subscriptions in case we swallowed an error!
+    Array.from(this._rendererSubs.values())
+      .filter(s => s.closed)
+      .forEach(broken => {
+        throw new Error("Something you did just broke an Antares renderer")
+      })
+
+    // Our result is a shallow clone of the action...
+    let resultObject = Object.assign({}, action, {
+      resultsAsync,
+      completed() {
+        const asyncObservables = this.resultsAsync.values()
+        const allDone = forkJoin(...Array.from(asyncObservables))
+        return allDone.toPromise()
+      }
+    })
+
+    // with readonly properties for each result
+    for (let [key, value] of results.entries()) {
+      Object.defineProperty(resultObject, key.toString(), {
+        value,
+        writable: false
+      })
+    }
+
+    return resultObject as ProcessResult
   }
 
   subscribeRenderer(
     renderer: Renderer,
-    { mode = RenderMode.sync, name }: RendererConfig = {}
+    { mode = RenderMode.sync, name, concurrency: Concurrency }: RendererConfig = {}
   ): Subscription {
     this._rendererCount += 1
     const _name = name || `renderer_${this._rendererCount}`
+    if (reservedRendererNames.includes(_name)) {
+      throw new Error("Reserved renderer names include: " + reservedRendererNames.join(",u"))
+    }
 
-    const subscribeTo =
+    const actionStream =
       mode.toString() === "sync" ? this.action$ : this.action$.pipe(observeOn(asyncScheduler))
-
     const safeRenderer: SafeRenderer = makeSafe(renderer, mode, _name, this)
+    const subscription = actionStream.subscribe(safeRenderer)
 
-    const subscription = subscribeTo.subscribe(safeRenderer)
     this._rendererSubs.set(_name, subscription)
     return subscription
   }
-}
-
-export default AntaresProtocol
-
-function makeSafe(
-  renderer: Renderer,
-  mode: RenderMode,
-  _name: String,
-  antares: AntaresProtocol
-): SafeRenderer {
-  const target = mode.toString() === "sync" ? makeSafeSync : makeSafeAsync
-
-  return target(renderer, mode, _name, antares)
-}
-
-const makeSafeSync = (
-  renderer: Renderer,
-  mode: RenderMode,
-  _name: String,
-  antares: AntaresProtocol
-): SafeRenderer => {
-  const safeSyncRenderer = (item: ActionStreamItem) => {
-    let result
-    let err
-
-    try {
-      result = renderer(item)
-    } catch (ex) {
-      err = ex
-      throw ex
-    } finally {
-      item.results.set(_name, result || err)
-    }
-  }
-
-  return safeSyncRenderer
-}
-
-const makeSafeAsync = (
-  renderer: Renderer,
-  mode: RenderMode,
-  _name: String,
-  antares: AntaresProtocol
-): SafeRenderer => {
-  const safeAsyncRenderer = (item: ActionStreamItem) => {
-    let result
-    let err
-
-    try {
-      result = renderer(item)
-    } catch (ex) {
-      err = ex
-      // no throwing in async mode! TODO -what to do then?
-      console.error(ex.message)
-    } finally {
-      const singletonSideEffects = prepareSideEffects(result, antares) // jest is declaring the next line uncovered when its not
-      /* istanbul ignore next */ item.resultsAsync.set(_name, singletonSideEffects || err)
-    }
-  }
-
-  return safeAsyncRenderer
-}
-
-const prepareSideEffects = (result: Observable<Action>, antares: AntaresProtocol) => {
-  // if our result is not subscribable, place a standin
-  let sideEffects = result && result.subscribe ? result : empty()
-  // 'share' the observable so its side effects cant happen twice
-  sideEffects = sideEffects.pipe(share())
-
-  // make sure the side effects are processed, by subscribing
-  // and that the actions the SEs return are processed - TODO ideally async
-  sideEffects.subscribe((action: Action) => {
-    antares.process(action)
-  })
-
-  return sideEffects
 }

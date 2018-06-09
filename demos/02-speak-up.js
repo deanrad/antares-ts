@@ -75,10 +75,14 @@ module.exports = ({ log, config: { count, syncRender, awaitedSpeak }, interactiv
 
   // prettier-ignore
   function speakIt({ action: { payload: { toSpeak }}}) {
-    var say = require("say")
-    say.speak(toSpeak, null, null, () => {
-      log("Done rendering")
-    })
+    try {
+        var say = require("say")
+        say.speak(toSpeak, null, null, () => {
+          log("Done rendering")
+        })
+    } catch (error) {
+        log("-- speech synthesis not available --")
+    }
   }
 
   function startTick() {

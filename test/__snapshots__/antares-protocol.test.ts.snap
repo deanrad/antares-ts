@@ -1,29 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AntaresProtocol #process accepts an action, and returns a promise for an ActionStream item 1`] = `
-Object {
-  "action": Object {
-    "type": "any",
-  },
-  "results": Map {},
-  "resultsAsync": Map {},
-}
-`;
-
-exports[`AntaresProtocol #subscribeRenderer accepts { name:String } on the config object 1`] = `
+exports[`AntaresProtocol #subscribeRenderer config.name accepts { name:String } on the config object 1`] = `
 Array [
   "JohnnyNull",
 ]
 `;
 
-exports[`AntaresProtocol #subscribeRenderer async (batch) mode happy path will send returned actions back through #process 1`] = `
+exports[`AntaresProtocol #subscribeRenderer config.name defaults naming a renderer 'renderer_N' 1`] = `
 Array [
-  Object {
-    "type": "any",
-  },
-  Object {
-    "type": "consequentialAction",
-  },
+  "JohnnyNull",
+  "renderer_2",
+  "JohnnyFive",
 ]
 `;
 
@@ -39,14 +26,6 @@ Object {
 }
 `;
 
-exports[`AntaresProtocol #subscribeRenderer defaults naming a renderer 'renderer_N' 1`] = `
-Array [
-  "JohnnyNull",
-  "renderer_2",
-  "JohnnyFive",
-]
-`;
-
 exports[`AntaresProtocol #subscribeRenderer exposes each processed action 1`] = `
 Array [
   Object {
@@ -58,4 +37,4 @@ Array [
 ]
 `;
 
-exports[`AntaresProtocol #subscribeRenderer synchronous (online) mode a renderer error propogates up to the caller of #process 1`] = `"unconditionally"`;
+exports[`AntaresProtocol #subscribeRenderer synchronous (online) mode a renderer error propogates up to the caller of #process 1`] = `"Something you did just broke an Antares renderer"`;

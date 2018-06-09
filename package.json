@@ -23,7 +23,7 @@
     "prebuild": "rimraf dist",
     "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
     "start": "rollup -c rollup.config.ts -w",
-    "test": "jest",
+    "test": "jest --expand",
     "test:watch": "jest --watch",
     "test:prod": "npm run lint && npm run test -- --no-coverage --no-cache",
     "deploy-docs": "ts-node tools/gh-pages-publish",
@@ -33,11 +33,11 @@
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "precommit": "lint-staged",
     "travis-deploy-once": "travis-deploy-once",
-    "prepush": "npm run test:prod && npm run build",
+    "prepush": "npm run test:prod && npm run build && npm run demos:test",
     "commitmsg": "validate-commit-msg",
     "size": "size-limit",
     "demos": "node demos/index",
-    "demos:test": "jest --coverage false --testRegex=\"/demos/test\\.(ts|tsx|js)$\"",
+    "demos:test": "jest --expand --coverage false --testRegex=\"/demos/test\\.(ts|tsx|js)$\"",
     "demos:interactive": "node demos/index --interactive"
   },
   "size-limit": [
@@ -87,7 +87,7 @@
     "collectCoverage": true
   },
   "devDependencies": {
-    "@types/jest": "^22.0.0",
+    "@types/jest": "^23.0.0",
     "@types/node": "^10.0.9",
     "colors": "^1.1.2",
     "commitizen": "^2.9.6",
