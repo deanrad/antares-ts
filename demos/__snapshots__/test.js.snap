@@ -1,5 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`All Demos speakUpDemo should show overlapping renderers 1`] = `
+"> About to process/say: Starbucks
+< processing done
+> About to process/say: International House of Pancakes
+< processing done
+•
+•
+•
+Done rendering
+•
+•
+"
+`;
+
 exports[`All Demos writeFileDemo should work asynchronously 1`] = `
 "Got some data for file ./demos/scratch/actors.md: Jake Weary
 Processing action Actor.save

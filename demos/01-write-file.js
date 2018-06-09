@@ -70,7 +70,7 @@ module.exports = ({ config={}, log, interactive = false }) => {
   function getPayloadFromStdin() {
     const inquirer = require("inquirer")
     return Promise.race([
-      new Promise((resolve, reject) => setTimeout(reject, 5000)),
+      new Promise((resolve, reject) => setTimeout(reject, 10000)),
       inquirer
         .prompt([
           {

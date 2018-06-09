@@ -30,4 +30,13 @@ describe("All Demos", () => {
       expect(output).toMatchSnapshot()
     })
   })
+  describe("speakUpDemo", () => {
+    it("should show overlapping renderers", async () => {
+      const [demoFn, config] = Demos.doubleSpeak
+
+      await demoFn({ config, log })
+
+      expect(output).toMatchSnapshot()
+    })
+  })
 })
