@@ -30,15 +30,15 @@ describe("All Demos", () => {
       expect(output).toMatchSnapshot()
     })
   })
-  if (!process.env.CI) {
-    describe("speakUpDemo", () => {
-      // wait for others' output to flush
-      beforeAll(async () => {
-        return await new Promise(resolve => setTimeout(resolve, 200))
-      })
+  describe("speakUpDemo", () => {
+    // wait for others' output to flush
+    beforeAll(async () => {
+      return await new Promise(resolve => setTimeout(resolve, 200))
+    })
 
-      // test wont work if speech synthesis isnt available
-      it("should hear overlapping speakings", async () => {
+    // test wont work if speech synthesis isnt available
+    it("should hear overlapping speakings", async () => {
+      if (!process.env.CI) {
         const [demoFn, config] = Demos.doubleSpeak || [() => true]
 
         try {
@@ -55,8 +55,21 @@ describe("All Demos", () => {
           return
         }
 
-        expect(output).toMatchSnapshot()
-      })
+        // snapshots wont work for tests that sometimes aren't run - Jest says 'obsolete'!
+        expect(output).toEqual(expectedSpeak)
+      }
     })
-  }
+  })
 })
+
+const expectedSpeak = `> About to process/say: Starbucks
+< processing done
+> About to process/say: International House of Pancakes
+< processing done
+•
+•
+•
+Done rendering
+•
+•
+`
