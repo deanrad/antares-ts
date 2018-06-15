@@ -15,23 +15,28 @@
       "request": "launch",
       "name": "Jest All",
       "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-      "args": ["--runInBand"],
+      "args": [
+        "--runInBand"
+      ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "outFiles": [
-          "dist/**/*"
+        "dist/**/*"
       ]
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Jest Current File",
+      "name": "Jest Demos",
       "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-      "args": ["${relativeFile}"],
+      "args": [
+        "--testRegex",
+        "/demos/test\\.(ts|tsx|js)$"
+      ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "outFiles": [
-          "dist/**/*"
+        "dist/**/*"
       ]
     }
   ]

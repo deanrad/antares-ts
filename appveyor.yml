@@ -11,13 +11,11 @@ install:
   # install modules
   - npm install
 
-# Post-install test scripts.
+# Test scripts
 test_script:
-  # Output useful info for debugging.
   - node --version
   - npm --version
-  # run tests
-  - npm test
+  - npm run test:prod
 
 # Don't actually build.
 build: off
