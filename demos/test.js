@@ -30,31 +30,33 @@ describe("All Demos", () => {
       expect(output).toMatchSnapshot()
     })
   })
-  describe("speakUpDemo", () => {
-    // wait for others' output to flush
-    beforeAll(async () => {
-      return new Promise(resolve => setTimeout(resolve, 200))
+  if (!process.env.CI) {
+    describe("speakUpDemo", () => {
+      // wait for others' output to flush
+      beforeAll(async () => {
+        return new Promise(resolve => setTimeout(resolve, 200))
+      })
+
+      // test wont work if speech synthesis isnt available
+      it("should hear overlapping speakings", async () => {
+        const [demoFn, config] = Demos.doubleSpeak || [() => true]
+
+        try {
+          require("say").speak("test")
+        } catch (ex) {
+          // silence it so it won't ruin CI
+          console.error("An error occurred using the speech interface.")
+        }
+
+        try {
+          require("say").speak("test")
+          await demoFn({ config, log })
+        } catch (ex) {
+          return
+        }
+
+        expect(output).toMatchSnapshot()
+      })
     })
-
-    // test wont work if speech synthesis isnt available
-    it("should hear overlapping speakings", async () => {
-      const [demoFn, config] = Demos.doubleSpeak || [() => true]
-
-      try {
-        require("say").speak("test")
-      } catch (ex) {
-        // silence it so it won't ruin CI
-        console.error("An error occurred using the speech interface.")
-      }
-
-      try {
-        require("say").speak("test")
-        await demoFn({ config, log })
-      } catch (ex) {
-        return
-      }
-
-      expect(output).toMatchSnapshot()
-    })
-  })
+  }
 })
