@@ -47,7 +47,12 @@ describe("All Demos", () => {
         console.error("An error occurred using the speech interface.")
       }
 
-      await demoFn({ config, log })
+      try {
+        require("say").speak("test")
+        await demoFn({ config, log })
+      } catch (ex) {
+        return
+      }
 
       expect(output).toMatchSnapshot()
     })
