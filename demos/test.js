@@ -34,7 +34,7 @@ describe("All Demos", () => {
     describe("speakUpDemo", () => {
       // wait for others' output to flush
       beforeAll(async () => {
-        return new Promise(resolve => setTimeout(resolve, 200))
+        return await new Promise(resolve => setTimeout(resolve, 200))
       })
 
       // test wont work if speech synthesis isnt available
