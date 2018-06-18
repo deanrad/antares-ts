@@ -1,3 +1,5 @@
+const { interval, from } = require("rxjs")
+const { map } = require("rxjs/operators")
 /*
     The flow of this demo is:
     - show a single spoken action
@@ -7,7 +9,7 @@
         a stream of renderings you can control
     - option A: If you had a promise for the rendering, you could await it in renderer
 */
-module.exports = ({ log, config: { count, syncRender, awaitedSpeak }, interactive }) => {
+module.exports = ({ log, config: { infinite, count, syncRender, awaitedSpeak }, interactive }) => {
   doIt()
   return startTick()
 
@@ -21,24 +23,34 @@ module.exports = ({ log, config: { count, syncRender, awaitedSpeak }, interactiv
     })
 
     // process our actions
-    getActions(interactive).then(actions => {
-      actions.forEach(action => {
-        log("> About to process/say: " + action.payload.toSpeak)
-        antares.process(action)
-        log("< processing done")
-      })
+    getActions(interactive).subscribe(action => {
+      log("> About to process/say: " + action.payload.toSpeak)
+      antares.process(action)
+      log("< processing done")
     })
   }
 
   function getActions(interactive) {
-    return interactive ? getUserActions() : Promise.resolve(getDemoActions())
+    return interactive ? from(getUserActions()) : getDemoActions()
   }
 
+  // By returning an Observable, we can either hand back a static array
+  // or an infinite stream over time (every 60 seconds)
   function getDemoActions() {
-    // prettier-ignore
-    return sayings
-        .slice(0, count)
-        .map(saying => ({ payload: { toSpeak: saying } }))
+    if (infinite) {
+      const faker = require("faker")
+      return interval(60000).pipe(
+        map(() => ({
+          payload: {
+            toSpeak: faker.company.catchPhrase()
+          }
+        }))
+      )
+    }
+
+    return from(sayings
+      .slice(0, count || 2)
+      .map(saying => ({ payload: { toSpeak: saying } })))
   }
 
   function getUserActions() {
