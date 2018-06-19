@@ -1,10 +1,11 @@
+const { AntaresProtocol, SubscribeMode } = require("../src/antares-protocol")
+
 module.exports = ({ config = {}, log, interactive = false }) => {
   const fileName = "./demos/scratch/actors.md"
 
   return runDemo()
 
   function runDemo() {
-    const { AntaresProtocol, SubscribeMode } = require("../dist/antares-protocol.umd")
     let antares = new AntaresProtocol()
 
     // Tell antares we have a renderer to apply

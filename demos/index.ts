@@ -2,7 +2,7 @@
 const Demos = require("./configs")
 const process = require("process")
 const { stdout } = process
-const { log } = console
+const log = s => stdout.write(s + "\n")
 const interactive = ["--interactive", "-i"].includes(process.argv[2])
 
 async function sequentiallyRun() {
@@ -17,4 +17,9 @@ async function sequentiallyRun() {
   console.log("\nBye!\n")
 }
 
-sequentiallyRun()
+describe("All demos", () => {
+  it("Should run them", async () => {
+    await sequentiallyRun()
+    //setTimeout(() => sequentiallyRun(), 0)
+  })
+})

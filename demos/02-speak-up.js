@@ -1,3 +1,4 @@
+const { AntaresProtocol, SubscribeMode } = require("../src/antares-protocol")
 const { interval, from } = require("rxjs")
 const { map } = require("rxjs/operators")
 /*
@@ -14,7 +15,6 @@ module.exports = ({ log, config: { infinite, count, syncRender }, interactive })
   return startTick()
 
   function doIt() {
-    const { AntaresProtocol, SubscribeMode } = require("../dist/antares-protocol.umd")
     let antares = new AntaresProtocol()
 
     // This one speaks things

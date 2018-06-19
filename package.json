@@ -37,9 +37,9 @@
     "prepush": "npm run test:ci",
     "commitmsg": "validate-commit-msg",
     "size": "size-limit",
-    "demos": "node demos/index",
+    "demos": "jest --verbose --no-coverage --testRegex=\"/demos/index\\.(js|ts)$\"",
     "demos:test": "jest --expand --coverage false --testRegex=\"/demos/test\\.(ts|tsx|js)$\"",
-    "demos:interactive": "node demos/index --interactive"
+    "demos:interactive": "ts-node demos/index --interactive"
   },
   "size-limit": [
     {
@@ -117,7 +117,6 @@
     "size-limit": "^0.18.1",
     "travis-deploy-once": "^5.0.0",
     "ts-jest": "^22.0.0",
-    "ts-node": "^6.0.0",
     "tslint": "^5.8.0",
     "tslint-config-prettier": "^1.1.0",
     "tslint-config-standard": "^7.0.0",
@@ -128,7 +127,5 @@
   "peerDependencies": {
     "rxjs": "^6.1.0",
     "rxjs-compat": "^6.1.0"
-  },
-  "tonicExampleFilename": "_runkitExample.js",
-  "runkitExampleFilename": "_runkitExample.js"
+  }
 }
