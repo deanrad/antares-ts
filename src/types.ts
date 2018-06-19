@@ -1,9 +1,18 @@
-import { Observable, Subscription } from "rxjs"
-import { RendererConfig } from "./types"
+import { Observable, Subject, Subscription } from "rxjs"
+import { SubscriberConfig } from "./types"
 
-export interface APMethods {
+export interface AntaresProcessor {
   process(action: Action): ProcessResult
-  subscribeRenderer(renderer: Renderer, config: RendererConfig): Subscription
+  addFilter(subscriber: Subscriber, config: SubscriberConfig): Subscription
+  addRenderer(subscriber: Subscriber, config: SubscriberConfig): Subscription
+}
+
+export interface Subscriber {
+  (item: ActionStreamItem): any
+}
+
+export interface SafeSubscriber {
+  (item: ActionStreamItem): any
 }
 
 export interface Action {
@@ -16,26 +25,11 @@ export interface Action {
 export interface ActionStreamItem {
   action: Action
   results: Map<String, any>
-  resultsAsync: Map<String, Observable<any>>
+  renderBeginnings: Map<String, Subject<boolean>>
+  renderResults: Map<String, Observable<any>>
 }
 
-export interface SyncRenderer {
-  (item: ActionStreamItem): any
-}
-
-export interface AsyncRenderer {
-  (item: ActionStreamItem): Observable<Action>
-}
-
-export interface Renderer {
-  (item: ActionStreamItem): any
-}
-
-export interface SafeRenderer {
-  (item: ActionStreamItem): any
-}
-
-export enum RenderMode {
+export enum SubscribeMode {
   sync = "sync",
   async = "async"
 }
@@ -54,8 +48,8 @@ export enum Concurrency {
   replace = "replace"
 }
 
-export interface RendererConfig {
-  mode?: RenderMode
+export interface SubscriberConfig {
+  mode?: SubscribeMode
   name?: string
   concurrency?: Concurrency
 }
@@ -69,5 +63,4 @@ export interface RendererConfig {
  */
 export interface ProcessResult {
   [key: string]: any
-  completed(): Promise<object>
 }

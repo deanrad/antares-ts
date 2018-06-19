@@ -1,20 +1,18 @@
-import { Observable, Subject, Subscription, asyncScheduler, forkJoin } from "rxjs"
+import { Observable, from, Subject, Subscription, asyncScheduler, forkJoin } from "rxjs"
 import { observeOn } from "rxjs/operators"
-import { makeSafe, reservedRendererNames } from "./renderers"
 import {
-  APMethods,
+  AntaresProcessor,
   Action,
   ActionStreamItem,
   ProcessResult,
-  RenderMode,
-  Renderer,
-  RendererConfig,
-  SafeRenderer
+  Subscriber,
+  SubscriberConfig,
+  SubscribeMode
 } from "./types"
-
+const assert = require("assert")
 export * from "./types"
 
-export class AntaresProtocol implements APMethods {
+export class AntaresProtocol implements AntaresProcessor {
   subject: Subject<ActionStreamItem>
   action$: Observable<ActionStreamItem>
   _rendererSubs: Map<String, Subscription>
@@ -28,28 +26,15 @@ export class AntaresProtocol implements APMethods {
 
   process(action: Action): ProcessResult {
     const results = new Map<String, any>()
-    const resultsAsync = new Map<String, Observable<any>>()
-    const item = { action, results, resultsAsync }
+    const renderBeginnings = new Map<String, Subject<boolean>>()
+    const renderResults = new Map<String, Observable<any>>()
+    const item = { action, results, renderBeginnings, renderResults }
 
     // synchronous renderers will run, or explode, upon the next line
     this.subject.next(item)
 
-    // Hack - check for any closed subscriptions in case we swallowed an error!
-    Array.from(this._rendererSubs.values())
-      .filter(s => s.closed)
-      .forEach(broken => {
-        throw new Error("Something you did just broke an Antares renderer")
-      })
-
     // Our result is a shallow clone of the action...
-    let resultObject = Object.assign({}, action, {
-      resultsAsync,
-      completed() {
-        const asyncObservables = this.resultsAsync.values()
-        const allDone = forkJoin(...Array.from(asyncObservables))
-        return allDone.toPromise()
-      }
-    })
+    let resultObject = Object.assign({}, action)
 
     // with readonly properties for each result
     for (let [key, value] of results.entries()) {
@@ -62,22 +47,40 @@ export class AntaresProtocol implements APMethods {
     return resultObject as ProcessResult
   }
 
-  subscribeRenderer(
-    renderer: Renderer,
-    { mode = RenderMode.sync, name, concurrency: Concurrency }: RendererConfig = {}
-  ): Subscription {
-    this._rendererCount += 1
-    const _name = name || `renderer_${this._rendererCount}`
-    if (reservedRendererNames.includes(_name)) {
-      throw new Error("Reserved renderer names include: " + reservedRendererNames.join(",u"))
-    }
-
-    const actionStream =
-      mode.toString() === "sync" ? this.action$ : this.action$.pipe(observeOn(asyncScheduler))
-    const safeRenderer: SafeRenderer = makeSafe(renderer, mode, _name, this)
-    const subscription = actionStream.subscribe(safeRenderer)
-
-    this._rendererSubs.set(_name, subscription)
-    return subscription
+  addFilter(subscriber: Subscriber, config: SubscriberConfig = {}): Subscription {
+    assert(
+      !config || !config.mode || config.mode !== SubscribeMode.async,
+      "addFilter only subscribes synchronously, check your config."
+    )
+    const name = config.name || `filter_${ ++this._rendererCount}`
+    // RxJS subscription mode is synchronous by default
+    const sub = this.action$.subscribe(asi => {
+      const { action, results } = asi
+      const result = subscriber(asi)
+      results.set(name, result)
+    })
+    return sub
   }
+
+  addRenderer(subscriber: Subscriber, config: SubscriberConfig): Subscription {
+    const name = config.name || `renderer_${ ++this._rendererCount}`
+    const sub = this.action$.pipe(observeOn(asyncScheduler)).subscribe(asi => {
+      const itHasBegun = new Subject<boolean>()
+      itHasBegun.complete()
+      asi.renderBeginnings.set(name, itHasBegun)
+
+      // Renderers return Observables, usually of actions
+      const results = subscriber(asi)
+      asi.renderResults.set(name, results)
+    })
+    return sub
+  }
+
+  // private subscribeRenderer(
+  //   renderer: Subscriber,
+  //   { mode = SubscribeMode.sync, name, concurrency: Concurrency }: SubscriberConfig = {}
+  // ): Subscription {
+  //   this._rendererCount += 1
+  //   const _name = name || `renderer_${this._rendererCount}`
+  // }
 }

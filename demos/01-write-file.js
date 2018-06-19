@@ -1,14 +1,19 @@
-module.exports = ({ config={}, log, interactive = false }) => {
+module.exports = ({ config = {}, log, interactive = false }) => {
   const fileName = "./demos/scratch/actors.md"
 
   return runDemo()
 
   function runDemo() {
-    const { AntaresProtocol, RenderMode } = require("../dist/antares-protocol.umd")
+    const { AntaresProtocol, SubscribeMode } = require("../dist/antares-protocol.umd")
     let antares = new AntaresProtocol()
 
     // Tell antares we have a renderer to apply
-    antares.subscribeRenderer(saveActor, {mode: config.mode || 'async' })
+    if (config.syncRender) {
+      antares.addFilter(saveActor)
+    } else {
+      antares.addRenderer(saveActor, { mode: SubscribeMode.async })
+    }
+
     // going in async mode is a little like doing
     // setTimeout(() => saveActor({action: {payload: {contents: 'Test'}}}), 0)
 
@@ -30,14 +35,16 @@ module.exports = ({ config={}, log, interactive = false }) => {
     }
 
     // Process it
-    return action
-      .then(processAction)
-      //.then(({ action }) => log(action.results))
-      .catch(ex => {
-        // We can expect our renderers to have picked it up now
-        console.log("\nA problem occurred, sorry: ", ex, "\nBye!")
-        process.exit(1)
-      })
+    return (
+      action
+        .then(processAction)
+        //.then(({ action }) => log(action.results))
+        .catch(ex => {
+          // We can expect our renderers to have picked it up now
+          console.log("\nA problem occurred, sorry: ", ex, "\nBye!")
+          process.exit(1)
+        })
+    )
   }
 
   function getDemoData() {

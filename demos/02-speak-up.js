@@ -9,18 +9,20 @@ const { map } = require("rxjs/operators")
         a stream of renderings you can control
     - option A: If you had a promise for the rendering, you could await it in renderer
 */
-module.exports = ({ log, config: { infinite, count, syncRender, awaitedSpeak }, interactive }) => {
+module.exports = ({ log, config: { infinite, count, syncRender }, interactive }) => {
   doIt()
   return startTick()
 
   function doIt() {
-    const { AntaresProtocol, RenderMode } = require("../dist/antares-protocol.umd")
+    const { AntaresProtocol, SubscribeMode } = require("../dist/antares-protocol.umd")
     let antares = new AntaresProtocol()
 
     // This one speaks things
-    antares.subscribeRenderer(awaitedSpeak ? speakItAwaited : speakIt, {
-      mode: syncRender ? "sync" : "async"
-    })
+    if (syncRender) {
+      antares.addFilter(speakIt)
+    } else {
+      antares.addRenderer(speakIt, { mode: SubscribeMode.async })
+    }
 
     // process our actions
     getActions(interactive).subscribe(action => {
@@ -48,9 +50,7 @@ module.exports = ({ log, config: { infinite, count, syncRender, awaitedSpeak }, 
       )
     }
 
-    return from(sayings
-      .slice(0, count || 2)
-      .map(saying => ({ payload: { toSpeak: saying } })))
+    return from(sayings.slice(0, count || 2).map(saying => ({ payload: { toSpeak: saying } })))
   }
 
   function getUserActions() {
@@ -85,18 +85,6 @@ module.exports = ({ log, config: { infinite, count, syncRender, awaitedSpeak }, 
     ])
   }
 
-  // prettier-ignore
-  function speakIt({ action: { payload: { toSpeak }}}) {
-    try {
-        var say = require("say")
-        say.speak(toSpeak, null, null, () => {
-          log("Done rendering")
-        })
-    } catch (error) {
-        log("-- speech synthesis not available --")
-    }
-  }
-
   function startTick() {
     // overall timing to show us where we're at and exit tidily
     let tick = setInterval(() => log("•"), 250)
@@ -107,19 +95,20 @@ module.exports = ({ log, config: { infinite, count, syncRender, awaitedSpeak }, 
       }, 1500)
     )
   }
-  // Note that subscribing this one as a renderer is no better
-  async function speakItAwaited({
+
+  function speakIt({
     action: {
       payload: { toSpeak }
     }
   }) {
-    var say = require("say")
-    // rettier-ignore
-    await new Promise(resolve => {
-      say.speak(toSpeak, null, null, resolve)
-    }).then(() => {
-      log("Done awaited-speaking")
-    })
+    try {
+      var say = require("say")
+      say.speak(toSpeak, null, null, () => {
+        log("Done rendering")
+      })
+    } catch (error) {
+      log("-- speech synthesis not available --")
+    }
   }
 }
 
