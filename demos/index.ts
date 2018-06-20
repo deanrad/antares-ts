@@ -20,6 +20,6 @@ async function sequentiallyRun() {
 describe("All demos", () => {
   it("Should run them", async () => {
     await sequentiallyRun()
-    //setTimeout(() => sequentiallyRun(), 0)
+    // setTimeout(() => sequentiallyRun(), 0)
   })
 })
