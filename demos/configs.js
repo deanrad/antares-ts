@@ -4,7 +4,7 @@ let configs = {
 }
 
 const failsInCI = {
-  doubleSpeak: [require("./02-speak-up"), { count: 2, syncRender: true }]
+  doubleSpeak: [require("./02-speak-up"), { count: 2 }]
   // udderSpeak: [require("./02-speak-up"), { count: 2, syncRender: false }] // no diff yet
 }
 

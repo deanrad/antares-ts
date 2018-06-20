@@ -30,6 +30,7 @@ describe("All Demos", () => {
 
       expect(output).toMatchSnapshot()
     })
+    it("should work with batching")
   })
   describe("speakUpDemo", () => {
     // wait for others' output to flush

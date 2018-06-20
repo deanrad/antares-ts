@@ -1,18 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`All Demos writeFileDemo should work asynchronously 1`] = `
-"Got some data for file ./demos/scratch/actors.md: Jake Weary
-Processing action Actor.save
-Done processing - No more to do?
+"> Got some data for file ./demos/scratch/actors.md: Jake Weary
+> Processing action Actor.save
+< Done processing - No more to do?
 OK Bye!
 "
 `;
 
 exports[`All Demos writeFileDemo should work synchronously 1`] = `
-"Got some data for file ./demos/scratch/actors.md: Jake Weary
-Processing action Actor.save
+"> Got some data for file ./demos/scratch/actors.md: Jake Weary
+> Processing action Actor.save
 File now contains: - Jake Weary
-Done processing - No more to do?
+
+< Done processing - No more to do?
 OK Bye!
 "
 `;

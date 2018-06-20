@@ -24,13 +24,13 @@ module.exports = ({ config = {}, log, interactive = false }) => {
     // Define what processing it means - Antares makes this super-high-level
     function processAction(action) {
       const contents = action.payload.contents
-      log(`Got some data for file ${fileName}: ${contents}`)
-      log(`Processing action ${action.type}`)
+      log(`> Got some data for file ${fileName}: ${contents}`)
+      log(`> Processing action ${action.type}`)
 
       // Now that processing is started, will the renderer messages print out
       // before or after the log that follows? Depends on rendering mode sync|async
       let result = antares.process(action)
-      log("Done processing - No more to do?\nOK Bye!")
+      log("< Done processing - No more to do?\nOK Bye!")
 
       return result
     }
@@ -63,12 +63,12 @@ module.exports = ({ config = {}, log, interactive = false }) => {
     const { contents } = payload
 
     // Apply specific knowledge that only the renderer knows
-    const markdownLine = "- " + contents
+    const markdownLine = "- " + contents + "\n"
 
     // Do our writing
     const fs = require("fs")
 
-    fs.writeFileSync(fileName, markdownLine, "utf8")
+    fs.appendFileSync(fileName, markdownLine, "utf8")
     const msg = `File now contains: ${markdownLine}`
     log(msg)
     return msg

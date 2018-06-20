@@ -29,9 +29,9 @@ module.exports = ({ log, config: { count, syncRender } }) => {
 
     // process our actions
     getActions(interactive).subscribe(action => {
-      log("> About to process/say: " + action.payload.toSpeak)
+      log(`> Processing action: Actor.save(${action.payload.toSpeak})`)
       antares.process(action)
-      log("< processing done")
+      log("< Done Processing")
     })
   }
 
