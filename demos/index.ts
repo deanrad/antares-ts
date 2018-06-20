@@ -3,7 +3,10 @@ const Demos = require("./configs")
 const process = require("process")
 const { stdout } = process
 const log = s => stdout.write(s + "\n")
-const interactive = ["--interactive", "-i"].includes(process.argv[2])
+const interactive = !!process.env.INTERACTIVE
+
+// gotta be long enough for INTERACTIVE mode
+jest.setTimeout(180000)
 
 async function sequentiallyRun() {
   for (let key of Object.keys(Demos)) {

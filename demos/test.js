@@ -9,6 +9,7 @@ const append = s => {
 }
 const log = appendLine
 
+jest.setTimeout(30000)
 describe("All Demos", () => {
   beforeEach(() => {
     output = ""
@@ -55,8 +56,8 @@ describe("All Demos", () => {
         }
 
         // snapshots wont work for tests that sometimes aren't run - Jest says 'obsolete'!
-      // test output is too highly variable
-      expect(output).toEqual(expectedSpeak)
+        // test output is too highly variable
+        expect(output).toEqual(expectedSpeak)
       }
     })
   })

@@ -10,7 +10,10 @@ const { map } = require("rxjs/operators")
         a stream of renderings you can control
     - option A: If you had a promise for the rendering, you could await it in renderer
 */
-module.exports = ({ log, config: { infinite, count, syncRender }, interactive }) => {
+module.exports = ({ log, config: { count, syncRender } }) => {
+  const interactive = !!process.env.INTERACTIVE
+  const infinite = !!process.env.INFINITE
+
   doIt()
   return startTick()
 
@@ -33,7 +36,8 @@ module.exports = ({ log, config: { infinite, count, syncRender }, interactive })
   }
 
   function getActions(interactive) {
-    return interactive ? from(getUserActions()) : getDemoActions()
+    return getDemoActions() // XXX interactive mode is busted
+    // return interactive ? from(getUserActions()) : getDemoActions()
   }
 
   // By returning an Observable, we can either hand back a static array
@@ -41,7 +45,7 @@ module.exports = ({ log, config: { infinite, count, syncRender }, interactive })
   function getDemoActions() {
     if (infinite) {
       const faker = require("faker")
-      return interval(60000).pipe(
+      return interval(1000).pipe(
         map(() => ({
           payload: {
             toSpeak: faker.company.catchPhrase()
