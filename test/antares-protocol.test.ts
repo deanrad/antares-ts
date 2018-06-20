@@ -135,6 +135,12 @@ describe("AntaresProtocol", () => {
         // And return the assertion
         return assertion
       })
+      describe("errors in filters", () => {
+        it("should propogate up to the caller of #process")
+      })
+      describe("errors in async renderers", () => {
+        it("should not propogate up to the caller of #process")
+      })
     })
   })
 })
