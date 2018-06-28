@@ -8,7 +8,8 @@ import {
   AntaresProtocol,
   ProcessResult,
   SubscribeMode,
-  Subscriber
+  Subscriber,
+  reservedSubscriberNames
 } from "../src/antares-protocol"
 
 describe("AntaresProtocol", () => {
@@ -40,7 +41,6 @@ describe("AntaresProtocol", () => {
           antares.process(anyAction)
           expect(spy).toHaveBeenCalled()
         })
-        it("should return an observable")
       })
       describe("config argument", () => {
         it("should not have mode async since filters are only sync", () => {
@@ -62,11 +62,36 @@ describe("AntaresProtocol", () => {
       })
       describe("config argument", () => {
         describe("name", () => {
-          it("will be renderer_N if not given")
+          it("will be filter_N if not given for a filter", () => {
+            expect(antares.filterNames).not.toContain("filter_1")
+            antares.addFilter(() => 3.141)
+            expect(antares.filterNames).toContain("filter_1")
+          })
+          it("will be renderer_N if not given for a renderer", () => {
+            expect(antares.rendererNames).not.toContain("renderer_1")
+            antares.addRenderer(() => 3.141)
+            expect(antares.rendererNames).toContain("renderer_1")
+          })
+          it("cannot be a reserved name", () => {
+            expect.assertions(reservedSubscriberNames.length)
+            reservedSubscriberNames.forEach(badName => {
+              expect(() => {
+                antares.addFilter(nullFn, { name: badName })
+              }).toThrow()
+            })
+          })
         })
       })
       describe("return value", () => {
-        it("is a subscriber")
+        it("is a subscription", () => {
+          let callCount = 0
+          const subscription = antares.addFilter(() => callCount++)
+          const result = antares.process(anyAction)
+          expect(callCount).toEqual(1)
+          subscription.unsubscribe()
+          antares.process(anyAction)
+          expect(callCount).toEqual(1)
+        })
       })
     })
   })
@@ -109,7 +134,6 @@ describe("AntaresProtocol", () => {
         expect(result._id).toEqual(secondRetVal)
         expect(result).toHaveProperty("_id", secondRetVal)
       })
-
       it("should not serialize result properties, allowing them to be complex", () => {
         expect.assertions(1)
         const retVal = "abc123"
@@ -136,11 +160,39 @@ describe("AntaresProtocol", () => {
         // And return the assertion
         return assertion
       })
+      it("should run filters in order", () => {
+        expect.assertions(1)
+
+        // Define some functions about which we solely care
+        //  about their (synchronous) side-effects
+        let counter = 1
+        const incrementer = () => {
+          return counter += 0.1
+        }
+        const doubler = () => {
+          return counter *= 2
+        }
+
+        antares.addFilter(incrementer, { name: "inc" })
+        antares.addFilter(doubler, { name: "double" })
+
+        let result = antares.process(anyAction)
+        const { double, inc } = result
+        expect({ double, inc }).toMatchSnapshot()
+      })
       describe("errors in filters", () => {
-        it("should propogate up to the caller of #process")
+        it("should propogate up to the caller of #process", () => {
+          antares.addFilter(() => {
+            throw new Error("whoops!")
+          })
+          expect(() => {
+            antares.process({ type: "timebomb" })
+          }).toThrowErrorMatchingSnapshot()
+        })
       })
       describe("errors in async renderers", () => {
-        it("should not propogate up to the caller of #process")
+        it("should not propogate up to the caller of #process", undefined)
+        it("should unsubscribe the renderer", undefined)
       })
     })
   })

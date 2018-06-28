@@ -1,4 +1,4 @@
-import { Observable, from, Subject, Subscription, asyncScheduler } from "rxjs"
+import { Observable, Subject, Subscription, asyncScheduler, from } from "rxjs"
 import { observeOn } from "rxjs/operators"
 import {
   AntaresProcessor,
@@ -10,21 +10,25 @@ import {
   SubscriberConfig,
   SubscribeMode
 } from "./types"
+
+// Leave this as require not import! https://github.com/webpack/webpack/issues/1019
 const assert = require("assert")
 export * from "./types"
 
 export class AntaresProtocol implements AntaresProcessor {
-  subject: Subject<ActionStreamItem>
+  actionStream: Subject<ActionStreamItem>
   action$: Observable<ActionStreamItem>
-  _rendererCount = 0
+  _subscriberCount = 0
   filterNames: Array<string>
+  allFilters: Map<string, Subscriber>
   rendererNames: Array<string>
   activeRenders: Map<string, Subscription>
 
   constructor() {
-    this.subject = new Subject<ActionStreamItem>()
-    this.action$ = this.subject.asObservable()
+    this.actionStream = new Subject<ActionStreamItem>()
+    this.action$ = this.actionStream.asObservable()
     this.filterNames = []
+    this.allFilters = new Map<string, Subscriber>()
     this.rendererNames = []
     this.activeRenders = new Map<string, Subscription>()
   }
@@ -39,13 +43,28 @@ export class AntaresProtocol implements AntaresProcessor {
     })
     const item = { action, results, renderBeginnings, renderEndings }
 
-    // synchronous renderers will run, or explode, upon the next line
-    this.subject.next(item)
+    // Run all filters sync (RxJS as of v6 no longer will sync error)
+    for (let filterName of this.allFilters.keys()) {
+      let filter = this.allFilters.get(filterName) || (() => null)
+      let result
+      let err
+      try {
+        result = filter(item)
+      } catch (ex) {
+        err = ex
+        throw ex
+      } finally {
+        results.set(filterName, result || err)
+      }
+    }
+
+    // If we passed filtering, next it on to the action stream
+    this.actionStream.next(item)
 
     // Our result is a shallow clone of the action...
     let resultObject = Object.assign({}, action)
 
-    // with readonly properties for each result
+    // Add readonly properties for each result
     for (let [key, value] of results.entries()) {
       Object.defineProperty(resultObject, key.toString(), {
         value,
@@ -55,7 +74,7 @@ export class AntaresProtocol implements AntaresProcessor {
       })
     }
 
-    // allow hooking the completion of async renders
+    // Allow hooking the completion of async renders
     Object.defineProperty(resultObject, "completed", {
       get() {
         return Promise.all(
@@ -63,29 +82,40 @@ export class AntaresProtocol implements AntaresProcessor {
         )
       }
     })
+
+    // Now they get their result
     return resultObject as ProcessResult
   }
 
-  addFilter(subscriber: Subscriber, config: SubscriberConfig = {}): Subscription {
+  addFilter(filter: Subscriber, config: SubscriberConfig = {}): Subscription {
     assert(
       !config || !config.mode || config.mode !== SubscribeMode.async,
       "addFilter only subscribes synchronously, check your config."
     )
-    const name = config.name || `filter_${++this._rendererCount}`
-    // RxJS subscription mode is synchronous by default
-    const sub = this.action$.subscribe(asi => {
-      const { action, results } = asi
-      const result = subscriber(asi)
-      results.set(name, result)
+    validateSubscriberName(config.name)
+    const name = config.name || `filter_${++this._subscriberCount}`
+    this.filterNames.push(name)
+    this.allFilters.set(name, filter)
+
+    const errHandler = (e: Error) => {
+      console.error("So sad, an error" + e.message)
+    }
+
+    // The subscription does little except give us an object
+    // which, when unsubscribed, will remove our filter
+    const sub = this.action$.subscribe(asi => null, errHandler)
+    sub.add(() => {
+      this.allFilters.delete(name)
     })
     return sub
   }
 
   addRenderer(subscriber: Subscriber, config: SubscriberConfig = {}): Subscription {
-    const name = config.name || `renderer_${++this._rendererCount}`
-    const concurrency = config.concurrency
-
+    validateSubscriberName(config.name)
+    const name = config.name || `renderer_${++this._subscriberCount}`
     this.rendererNames.push(name)
+
+    const concurrency = config.concurrency
     const sub = this.action$.pipe(observeOn(asyncScheduler)).subscribe(asi => {
       const itHasBegun = new Subject<boolean>()
       itHasBegun.complete()
@@ -118,6 +148,12 @@ export class AntaresProtocol implements AntaresProcessor {
         inProgress && inProgress.unsubscribe()
         subAndSave()
       }
+      // Bug hiding below: if you run the fruit serial demo,
+      // two keypresses in close succession will both run
+      // after the current inProgress, but not themselves serially
+      // ⑨  🥑   ②  🥑   ①  🥑  🥑  🥑  🥑  🥑  🥑  🥑  💥
+      // 🍌  🍓  💥
+      // 🍌  💥  <-- note the interleaving of banana and strawberry
       if (concurrency === Concurrency.serial) {
         inProgress ? inProgress.add(subAndSave) : subAndSave()
       }
@@ -128,3 +164,12 @@ export class AntaresProtocol implements AntaresProcessor {
     return sub
   }
 }
+
+function validateSubscriberName(name: string | undefined) {
+  assert(
+    !name || !reservedSubscriberNames.includes(name),
+    "The following subscriber names are reserved: " + reservedSubscriberNames.join(", ")
+  )
+}
+
+export const reservedSubscriberNames = ["completed", "then", "catch"]
