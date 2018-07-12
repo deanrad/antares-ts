@@ -912,14 +912,14 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-enum">
 			<a href="../enums/concurrency.html" class="tsd-kind-icon">Concurrency</a>
 		</li>
-		<li class=" tsd-kind-enum">
-			<a href="../enums/subscribemode.html" class="tsd-kind-icon">Subscribe<wbr>Mode</a>
-		</li>
 		<li class=" tsd-kind-class">
-			<a href="../classes/antaresprotocol.html" class="tsd-kind-icon">Antares<wbr>Protocol</a>
+			<a href="../classes/agent.html" class="tsd-kind-icon">Agent</a>
 		</li>
 		<li class=" tsd-kind-interface">
 			<a href="action.html" class="tsd-kind-icon">Action</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="actionprocessor.html" class="tsd-kind-icon">Action<wbr>Processor</a>
 		</li>
 		<li class="current tsd-kind-interface">
 			<a href="actionstreamitem.html" class="tsd-kind-icon">Action<wbr>Stream<wbr>Item</a>
@@ -931,7 +931,7 @@ img { max-width: 100%; }
 					<a href="actionstreamitem.html#renderbeginnings" class="tsd-kind-icon">render<wbr>Beginnings</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="actionstreamitem.html#renderresults" class="tsd-kind-icon">render<wbr>Results</a>
+					<a href="actionstreamitem.html#renderendings" class="tsd-kind-icon">render<wbr>Endings</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="actionstreamitem.html#results" class="tsd-kind-icon">results</a>
@@ -939,13 +939,10 @@ img { max-width: 100%; }
 			</ul>
 		</li>
 		<li class=" tsd-kind-interface">
-			<a href="antaresprocessor.html" class="tsd-kind-icon">Antares<wbr>Processor</a>
-		</li>
-		<li class=" tsd-kind-interface">
 			<a href="processresult.html" class="tsd-kind-icon">Process<wbr>Result</a>
 		</li>
 		<li class=" tsd-kind-interface">
-			<a href="safesubscriber.html" class="tsd-kind-icon">Safe<wbr>Subscriber</a>
+			<a href="streamtransformer.html" class="tsd-kind-icon">Stream<wbr>Transformer</a>
 		</li>
 		<li class=" tsd-kind-interface">
 			<a href="subscriber.html" class="tsd-kind-icon">Subscriber</a>
@@ -955,6 +952,30 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-variable tsd-is-not-exported">
 			<a href="../globals.html#assert" class="tsd-kind-icon">assert</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="../globals.html#delay" class="tsd-kind-icon">delay</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="../globals.html#map" class="tsd-kind-icon">map</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="../globals.html#of" class="tsd-kind-icon">of</a>
+		</li>
+		<li class=" tsd-kind-variable">
+			<a href="../globals.html#reservedsubscribernames" class="tsd-kind-icon">reserved<wbr>Subscriber<wbr>Names</a>
+		</li>
+		<li class=" tsd-kind-function">
+			<a href="../globals.html#after" class="tsd-kind-icon">after</a>
+		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="../globals.html#streamtransformerfrom" class="tsd-kind-icon">stream<wbr>Transformer<wbr>From</a>
+		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="../globals.html#validateconfig" class="tsd-kind-icon">validate<wbr>Config</a>
+		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="../globals.html#validatesubscribername" class="tsd-kind-icon">validate<wbr>Subscriber<wbr>Name</a>
 		</li>
 	</ul>
 </nav>
@@ -977,7 +998,7 @@ img { max-width: 100%; }
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actionstreamitem.html#action" class="tsd-kind-icon">action</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actionstreamitem.html#renderbeginnings" class="tsd-kind-icon">render<wbr>Beginnings</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actionstreamitem.html#renderresults" class="tsd-kind-icon">render<wbr>Results</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actionstreamitem.html#renderendings" class="tsd-kind-icon">render<wbr>Endings</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actionstreamitem.html#results" class="tsd-kind-icon">results</a></li>
 						</ul>
 					</section>
@@ -992,7 +1013,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">action<span class="tsd-signature-symbol">:</span> <a href="action.html" class="tsd-signature-type">Action</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0259c0d/src/types.ts#L26">types.ts:26</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/be0b671/src/types.ts#L22">types.ts:22</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1002,17 +1023,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">render<wbr>Beginnings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">String</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Subject</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0259c0d/src/types.ts#L28">types.ts:28</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/be0b671/src/types.ts#L24">types.ts:24</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="renderresults" class="tsd-anchor"></a>
-				<h3>render<wbr>Results</h3>
-				<div class="tsd-signature tsd-kind-icon">render<wbr>Results<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">String</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
+				<a name="renderendings" class="tsd-anchor"></a>
+				<h3>render<wbr>Endings</h3>
+				<div class="tsd-signature tsd-kind-icon">render<wbr>Endings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">String</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Subject</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0259c0d/src/types.ts#L29">types.ts:29</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/be0b671/src/types.ts#L25">types.ts:25</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1022,12 +1043,12 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">results<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">String</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0259c0d/src/types.ts#L27">types.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/be0b671/src/types.ts#L23">types.ts:23</a></li>
 					</ul>
 				</aside>
 			</section>
 		</section>
-		<footer class="with-border-bottom">
+		<footer>
 			<div class="container">
 				<h2>Legend</h2>
 				<div class="tsd-legend-group">
@@ -1086,9 +1107,6 @@ img { max-width: 100%; }
 				</div>
 			</div>
 		</footer>
-		<div class="container tsd-generator">
-			<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
-		</div>
 	</div>
 </div>
 <script type="text/javascript">
