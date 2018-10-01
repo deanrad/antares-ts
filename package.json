@@ -1,0 +1,21 @@
+{
+  "name": "antares",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deanius/antares-ts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/deanius/antares-ts/issues"
+  },
+  "homepage": "https://github.com/deanius/antares-ts#readme"
+}
