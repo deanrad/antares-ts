@@ -966,6 +966,9 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-function">
 			<a href="../globals.html#jsonpatch" class="tsd-kind-icon">json<wbr>Patch</a>
 		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="../globals.html#oboeget" class="tsd-kind-icon">oboe<wbr>Get</a>
+		</li>
 		<li class=" tsd-kind-function">
 			<a href="../globals.html#pp" class="tsd-kind-icon">pp</a>
 		</li>
@@ -974,6 +977,9 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-function">
 			<a href="../globals.html#randomidfilter" class="tsd-kind-icon">random<wbr>IdFilter</a>
+		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="../globals.html#rxget" class="tsd-kind-icon">rx<wbr>Get</a>
 		</li>
 		<li class=" tsd-kind-function tsd-is-not-exported">
 			<a href="../globals.html#streamtransformerfrom" class="tsd-kind-icon">stream<wbr>Transformer<wbr>From</a>
@@ -990,15 +996,13 @@ img { max-width: 100%; }
 	<div class="content-wrap">
 		<section class="tsd-panel tsd-comment">
 			<div class="tsd-comment tsd-typography">
-				<dl class="tsd-comment-tags">
-					<dt>description</dt>
-					<dd><p>Your contract for what is returned from calling #process.
-							Basically this is the Object.assign({}, action, results), and so
-							you can destructure from it your renderer&#39;s return values by name,
-							or <code>type</code>, <code>payload</code>, or <code>meta</code>. Meta will often be interesting since
-						synchronous renderers (filters) can modify or add new meta, and often do.</p>
-					</dd>
-				</dl>
+				<div class="lead">
+					<p>Your contract for what is returned from calling #process.
+						Basically this is the Object.assign({}, action, results), and so
+						you can destructure from it your renderer&#39;s return values by name,
+						or <code>type</code>, <code>payload</code>, or <code>meta</code>. Meta will often be interesting since
+					synchronous renderers (filters) can modify or add new meta, and often do.</p>
+				</div>
 			</div>
 		</section>
 		<section class="tsd-panel tsd-hierarchy">
@@ -1012,6 +1016,15 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-kind-interface">
 			<h3 class="tsd-before-signature">Indexable</h3>
 			<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></div>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Your contract for what is returned from calling #process.
+						Basically this is the Object.assign({}, action, results), and so
+						you can destructure from it your renderer&#39;s return values by name,
+						or <code>type</code>, <code>payload</code>, or <code>meta</code>. Meta will often be interesting since
+					synchronous renderers (filters) can modify or add new meta, and often do.</p>
+				</div>
+			</div>
 		</section>
 		<footer>
 			<div class="container">

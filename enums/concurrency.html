@@ -980,6 +980,9 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-function">
 			<a href="../globals.html#jsonpatch" class="tsd-kind-icon">json<wbr>Patch</a>
 		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="../globals.html#oboeget" class="tsd-kind-icon">oboe<wbr>Get</a>
+		</li>
 		<li class=" tsd-kind-function">
 			<a href="../globals.html#pp" class="tsd-kind-icon">pp</a>
 		</li>
@@ -988,6 +991,9 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-function">
 			<a href="../globals.html#randomidfilter" class="tsd-kind-icon">random<wbr>IdFilter</a>
+		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="../globals.html#rxget" class="tsd-kind-icon">rx<wbr>Get</a>
 		</li>
 		<li class=" tsd-kind-function tsd-is-not-exported">
 			<a href="../globals.html#streamtransformerfrom" class="tsd-kind-icon">stream<wbr>Transformer<wbr>From</a>
@@ -1004,19 +1010,17 @@ img { max-width: 100%; }
 	<div class="content-wrap">
 		<section class="tsd-panel tsd-comment">
 			<div class="tsd-comment tsd-typography">
-				<dl class="tsd-comment-tags">
-					<dt>description</dt>
-					<dd><p>When a renderer (async usually) returns an Observable, it&#39;s possible
-							that multiple renderings will be active at once (see demo &#39;speak-up&#39;). The options
-						are:</p>
-						<ul>
-							<li>parallel: Concurrent renders are unlimited, unadjusted</li>
-							<li>serial: Concurrency of 1, render starts are queued</li>
-							<li>cutoff: Concurrency of 1, any existing render is killed</li>
-							<li>mute: Concurrency of 1, existing render prevents new renders</li>
-						</ul>
-					</dd>
-				</dl>
+				<div class="lead">
+					<p>When a renderer (async usually) returns an Observable, it&#39;s possible
+						that multiple renderings will be active at once (see demo &#39;speak-up&#39;). The options
+					are:</p>
+					<ul>
+						<li>parallel: Concurrent renders are unlimited, unadjusted</li>
+						<li>serial: Concurrency of 1, render starts are queued</li>
+						<li>cutoff: Concurrency of 1, any existing render is killed</li>
+						<li>mute: Concurrency of 1, existing render prevents new renders</li>
+					</ul>
+				</div>
 			</div>
 		</section>
 		<section class="tsd-panel-group tsd-index-group">
@@ -1043,15 +1047,13 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">cutoff<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;cutoff&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/types.ts#L60">types.ts:60</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/types.ts#L75">types.ts:75</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Concurrency of 1, any existing render is killed</p>
-						</dd>
-					</dl>
+					<div class="lead">
+						<p>Concurrency of 1, any existing render is killed</p>
+					</div>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -1060,15 +1062,13 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">mute<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;mute&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/types.ts#L62">types.ts:62</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/types.ts#L78">types.ts:78</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Concurrency of 1, existing render prevents new renders</p>
-						</dd>
-					</dl>
+					<div class="lead">
+						<p>Concurrency of 1, existing render prevents new renders</p>
+					</div>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -1077,15 +1077,13 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">parallel<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;parallel&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/types.ts#L56">types.ts:56</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/types.ts#L69">types.ts:69</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Concurrent renders are unlimited, unadjusted</p>
-						</dd>
-					</dl>
+					<div class="lead">
+						<p>Concurrent renders are unlimited, unadjusted</p>
+					</div>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
@@ -1094,15 +1092,13 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">serial<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;serial&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/types.ts#L58">types.ts:58</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/types.ts#L72">types.ts:72</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Concurrency of 1, render starts are queued</p>
-						</dd>
-					</dl>
+					<div class="lead">
+						<p>Concurrency of 1, render starts are queued</p>
+					</div>
 				</div>
 			</section>
 		</section>

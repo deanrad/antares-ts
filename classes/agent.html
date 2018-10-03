@@ -1001,6 +1001,9 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-function">
 			<a href="../globals.html#jsonpatch" class="tsd-kind-icon">json<wbr>Patch</a>
 		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="../globals.html#oboeget" class="tsd-kind-icon">oboe<wbr>Get</a>
+		</li>
 		<li class=" tsd-kind-function">
 			<a href="../globals.html#pp" class="tsd-kind-icon">pp</a>
 		</li>
@@ -1009,6 +1012,9 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-function">
 			<a href="../globals.html#randomidfilter" class="tsd-kind-icon">random<wbr>IdFilter</a>
+		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="../globals.html#rxget" class="tsd-kind-icon">rx<wbr>Get</a>
 		</li>
 		<li class=" tsd-kind-function tsd-is-not-exported">
 			<a href="../globals.html#streamtransformerfrom" class="tsd-kind-icon">stream<wbr>Transformer<wbr>From</a>
@@ -1025,13 +1031,13 @@ img { max-width: 100%; }
 	<div class="content-wrap">
 		<section class="tsd-panel tsd-comment">
 			<div class="tsd-comment tsd-typography">
-				<dl class="tsd-comment-tags">
-					<dt>description</dt>
-					<dd><p>Represents the instance of an Antares action processor which is
-							usually the only one in this JavaScript runtime. The heart and circulatory system of
-						an Agent is <code>action$</code>, its action stream.</p>
-					</dd>
-				</dl>
+				<div class="lead">
+					<p>Represents the instance of an Antares action processor which is
+						usually the only one in this JavaScript runtime. The heart and circulatory system of
+						an Agent is <code>action$</code>, its action stream. You put actions on the action stream
+						by calling <code>agent.process(action)</code> and from there filters and renderers respond.
+					Because renderers may emit more actions, this process can continue indefinitely.</p>
+				</div>
 			</div>
 		</section>
 		<section class="tsd-panel tsd-hierarchy">
@@ -1051,6 +1057,15 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-kind-class">
 			<h3 class="tsd-before-signature">Indexable</h3>
 			<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></div>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Represents the instance of an Antares action processor which is
+						usually the only one in this JavaScript runtime. The heart and circulatory system of
+						an Agent is <code>action$</code>, its action stream. You put actions on the action stream
+						by calling <code>agent.process(action)</code> and from there filters and renderers respond.
+					Because renderers may emit more actions, this process can continue indefinitely.</p>
+				</div>
+			</div>
 		</section>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
@@ -1097,7 +1112,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L62">antares-protocol.ts:62</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L67">antares-protocol.ts:67</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1119,15 +1134,13 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">action$<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/actionstreamitem.html" class="tsd-signature-type">ActionStreamItem</a><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L46">antares-protocol.ts:46</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L49">antares-protocol.ts:49</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>The heart and circulatory system of an Agent is <code>action$</code>, its action stream.</p>
-						</dd>
-					</dl>
+					<div class="lead">
+						<p>The heart and circulatory system of an Agent is <code>action$</code>, its action stream.</p>
+					</div>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
@@ -1136,15 +1149,13 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">all<wbr>OfType<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L56">antares-protocol.ts:56</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L61">antares-protocol.ts:61</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Gets an Observable of all actions matching the ActionFilter.</p>
-						</dd>
-					</dl>
+					<div class="lead">
+						<p>Gets an Observable of all actions matching the ActionFilter.</p>
+					</div>
 				</div>
 				<div class="tsd-type-declaration">
 					<h4>Type declaration</h4>
@@ -1174,7 +1185,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">filter<wbr>Names<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L47">antares-protocol.ts:47</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L50">antares-protocol.ts:50</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1184,15 +1195,13 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">next<wbr>OfType<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L53">antares-protocol.ts:53</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L57">antares-protocol.ts:57</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Gets a promise for the next action matching the ActionFilter.</p>
-						</dd>
-					</dl>
+					<div class="lead">
+						<p>Gets a promise for the next action matching the ActionFilter.</p>
+					</div>
 				</div>
 				<div class="tsd-type-declaration">
 					<h4>Type declaration</h4>
@@ -1222,7 +1231,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">renderer<wbr>Names<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L48">antares-protocol.ts:48</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L51">antares-protocol.ts:51</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1232,7 +1241,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">configurable<wbr>Props<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&quot;agentId&quot;, &quot;relayActions&quot;]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L43">antares-protocol.ts:43</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L45">antares-protocol.ts:45</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1250,19 +1259,17 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/actionprocessor.html">ActionProcessor</a>.<a href="../interfaces/actionprocessor.html#addfilter">addFilter</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L217">antares-protocol.ts:217</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L225">antares-protocol.ts:225</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
-							<dl class="tsd-comment-tags">
-								<dt>description</dt>
-								<dd><p>Filters are synchronous functions that sequentially process
-										each item on <code>action$</code>, possibly changing them or creating synchronous
-										state changes. Useful for type-checking, writing to a memory-based store.
-										For creating consequences (aka async side-effects aka renders) outside of
-									the running Agent, write and attach a Renderer. Filters run in series.</p>
-								</dd>
-							</dl>
+							<div class="lead">
+								<p>Filters are synchronous functions that sequentially process
+									each item on <code>action$</code>, possibly changing them or creating synchronous
+									state changes. Useful for type-checking, writing to a memory-based store.
+									For creating consequences (aka async side-effects aka renders) outside of
+								the running Agent, write and attach a Renderer. Filters run in series.</p>
+							</div>
 						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
@@ -1288,20 +1295,18 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/actionprocessor.html">ActionProcessor</a>.<a href="../interfaces/actionprocessor.html#addrenderer">addRenderer</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L239">antares-protocol.ts:239</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L248">antares-protocol.ts:248</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
-							<dl class="tsd-comment-tags">
-								<dt>description</dt>
-								<dd><p>Renderers are functions that exist to create side-effects
-										outside of the Antares Agent - called Renderings. This can be changes to a
-										DOM, to a database, or communications (eg AJAX) sent on the wire. If its
-										an async behavior, it should be a Renderer not a filter. Renderers run
-										in parallel with respect to other renderers. The way they act with respect
-									to their own overlap, is per their <code>concurrency</code> config parameter.</p>
-								</dd>
-							</dl>
+							<div class="lead">
+								<p>Renderers are functions that exist to create side-effects
+									outside of the Antares Agent - called Renderings. This can be changes to a
+									DOM, to a database, or communications (eg AJAX) sent on the wire. If its
+									an async behavior, it should be a Renderer not a filter. Renderers run
+									in parallel with respect to other renderers. The way they act with respect
+								to their own overlap, is per their <code>concurrency</code> config parameter.</p>
+							</div>
 						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
@@ -1326,14 +1331,14 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L203">antares-protocol.ts:203</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L210">antares-protocol.ts:210</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Calls addRenderer, but uses a more event-handler-like syntax.</p>
+							</div>
 							<dl class="tsd-comment-tags">
-								<dt>description</dt>
-								<dd><p>Calls addRenderer, but uses a more event-handler-like syntax.</p>
-								</dd>
 								<dt>example</dt>
 								<dd><p>agent.on(&#39;search/message/success&#39;, getMessageBody(&#39;message/body/success&#39;))
 										agent.on(&#39;message/body/success&#39;, getAttachmentBody(&#39;message/attachment/success&#39;), {
@@ -1369,16 +1374,16 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/actionprocessor.html">ActionProcessor</a>.<a href="../interfaces/actionprocessor.html#process">process</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L117">antares-protocol.ts:117</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L123">antares-protocol.ts:123</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Process sends an Action (eg Flux Standard Action), which
+									is an object with a payload and type description, through the chain of
+								filters, and then out through any applicable renderers.</p>
+							</div>
 							<dl class="tsd-comment-tags">
-								<dt>description</dt>
-								<dd><p>Process sends an Action (eg Flux Standard Action), which
-										is an object with a payload and type description, through the chain of
-									filters, and then out through any applicable renderers.</p>
-								</dd>
 								<dt>throws</dt>
 								<dd><p>Throws if a filter errs, but not if a renderer errs.</p>
 								</dd>

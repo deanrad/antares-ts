@@ -966,6 +966,9 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-function">
 			<a href="globals.html#jsonpatch" class="tsd-kind-icon">json<wbr>Patch</a>
 		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="globals.html#oboeget" class="tsd-kind-icon">oboe<wbr>Get</a>
+		</li>
 		<li class=" tsd-kind-function">
 			<a href="globals.html#pp" class="tsd-kind-icon">pp</a>
 		</li>
@@ -974,6 +977,9 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-function">
 			<a href="globals.html#randomidfilter" class="tsd-kind-icon">random<wbr>IdFilter</a>
+		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="globals.html#rxget" class="tsd-kind-icon">rx<wbr>Get</a>
 		</li>
 		<li class=" tsd-kind-function tsd-is-not-exported">
 			<a href="globals.html#streamtransformerfrom" class="tsd-kind-icon">stream<wbr>Transformer<wbr>From</a>
@@ -1082,9 +1088,11 @@ img { max-width: 100%; }
 							<li class="tsd-kind-function"><a href="globals.html#ajaxstreamingget" class="tsd-kind-icon">ajax<wbr>Streaming<wbr>Get</a></li>
 							<li class="tsd-kind-function"><a href="globals.html#getactionfilter" class="tsd-kind-icon">get<wbr>Action<wbr>Filter</a></li>
 							<li class="tsd-kind-function"><a href="globals.html#jsonpatch" class="tsd-kind-icon">json<wbr>Patch</a></li>
+							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#oboeget" class="tsd-kind-icon">oboe<wbr>Get</a></li>
 							<li class="tsd-kind-function"><a href="globals.html#pp" class="tsd-kind-icon">pp</a></li>
 							<li class="tsd-kind-function"><a href="globals.html#randomid" class="tsd-kind-icon">random<wbr>Id</a></li>
 							<li class="tsd-kind-function"><a href="globals.html#randomidfilter" class="tsd-kind-icon">random<wbr>IdFilter</a></li>
+							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#rxget" class="tsd-kind-icon">rx<wbr>Get</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#streamtransformerfrom" class="tsd-kind-icon">stream<wbr>Transformer<wbr>From</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#validateconfig" class="tsd-kind-icon">validate<wbr>Config</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#validatesubscribername" class="tsd-kind-icon">validate<wbr>Subscriber<wbr>Name</a></li>
@@ -1101,7 +1109,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Action<wbr>Filter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/types.ts#L77">types.ts:77</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/types.ts#L93">types.ts:93</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1114,7 +1122,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">assert<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;typeof require &#x3D;&#x3D;&#x3D; &quot;undefined&quot; ? () &#x3D;&gt; null : require(&quot;assert&quot;)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L19">antares-protocol.ts:19</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L19">antares-protocol.ts:19</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1124,7 +1132,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">reserved<wbr>Subscriber<wbr>Names<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&quot;completed&quot;, &quot;then&quot;, &quot;catch&quot;]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L369">antares-protocol.ts:369</a></li>
+						<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L378">antares-protocol.ts:378</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1141,9 +1149,14 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/operators.ts#L12">operators.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/operators.ts#L12">operators.ts:12</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Delays the occurrence of an object, or the invocation of a function, for the number of milliseconds given</p>
+							</div>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
@@ -1168,9 +1181,15 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L374">antares-protocol.ts:374</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L384">antares-protocol.ts:384</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Constructs a filter (see agent.addFilter) which mixes AgentConfig properties
+								into the meta of an action</p>
+							</div>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
@@ -1191,9 +1210,14 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/operators.ts#L26">operators.ts:26</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/operators.ts#L27">operators.ts:27</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Gets the resource, returning an Observable of resources referred to by the URL</p>
+							</div>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
@@ -1214,7 +1238,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/lib.ts#L3">lib.ts:3</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/lib.ts#L3">lib.ts:3</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1255,10 +1279,38 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/operators.ts#L44">operators.ts:44</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/operators.ts#L71">operators.ts:71</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Turns a stream of objects into a stream of the patches between them.</p>
+							</div>
+						</div>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">(Anonymous function)</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function tsd-is-not-exported">
+				<a name="oboeget" class="tsd-anchor"></a>
+				<h3>oboe<wbr>Get</h3>
+				<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
+					<li class="tsd-signature tsd-kind-icon">oboe<wbr>Get<span class="tsd-signature-symbol">(</span>opts<span class="tsd-signature-symbol">: </span><a href="interfaces/streaminggetoptions.html" class="tsd-signature-type">StreamingGetOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/operators.ts#L48">operators.ts:48</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>opts: <a href="interfaces/streaminggetoptions.html" class="tsd-signature-type">StreamingGetOptions</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1272,9 +1324,14 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L405">antares-protocol.ts:405</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L418">antares-protocol.ts:418</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Pretty-print an action</p>
+							</div>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
@@ -1295,9 +1352,16 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L387">antares-protocol.ts:387</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L398">antares-protocol.ts:398</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>A random enough identifier, 1 in a million or so,
+									to identify actions in a stream. Not globally or cryptographically
+								random, just more random than: <a href="https://xkcd.com/221/">https://xkcd.com/221/</a></p>
+							</div>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
@@ -1318,9 +1382,15 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L395">antares-protocol.ts:395</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L407">antares-protocol.ts:407</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>A filter that adds a string of hex digits to
+								action.meta.actionId to uniquely identify an action among its neighbors.</p>
+							</div>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
@@ -1335,6 +1405,29 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-function tsd-is-not-exported">
+				<a name="rxget" class="tsd-anchor"></a>
+				<h3>rx<wbr>Get</h3>
+				<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
+					<li class="tsd-signature tsd-kind-icon">rx<wbr>Get<span class="tsd-signature-symbol">(</span>opts<span class="tsd-signature-symbol">: </span><a href="interfaces/streaminggetoptions.html" class="tsd-signature-type">StreamingGetOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/operators.ts#L33">operators.ts:33</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>opts: <a href="interfaces/streaminggetoptions.html" class="tsd-signature-type">StreamingGetOptions</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function tsd-is-not-exported">
 				<a name="streamtransformerfrom" class="tsd-anchor"></a>
 				<h3>stream<wbr>Transformer<wbr>From</h3>
 				<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
@@ -1344,7 +1437,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L343">antares-protocol.ts:343</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L352">antares-protocol.ts:352</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1367,7 +1460,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L360">antares-protocol.ts:360</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L369">antares-protocol.ts:369</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1390,7 +1483,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/0c2281f/src/antares-protocol.ts#L336">antares-protocol.ts:336</a></li>
+								<li>Defined in <a href="https://github.com/deanius/antares-ts/blob/eaf91e3/src/antares-protocol.ts#L345">antares-protocol.ts:345</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
