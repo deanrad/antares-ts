@@ -1,0 +1,222 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red103\green103\blue103;}
+{\*\expandedcolortbl;;\csgray\c47953;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}}
+\margl1440\margr1440\vieww14200\viewh16580\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\b\fs36 \cf0 Demo: Hotel California Booking App (9 min tops!)\
+TODO: Move this to markdown w/ code examples style, and record demo.\
+ 	\
+
+\b0\fs24 Setup: TODO specify windowing arrangement, make recording..\
+ 
+\b\fs36 \
+
+\b0\fs24 Show: Fullscreen http://antares-hotel.herokuapp.com/\
+  - Explain the layout of rooms into floors, and the Legend\
+  - Show Room 20 toggles hold/open periodically\
+  - Show Open another browser they show the same view\
+  - Tell Network: REST call for rooms, occupancy, WS Frames for occupancy\
+  - Redux: Show loadRooms and setOccupancy actions\
+
+\b\fs36 \
+
+\b0\fs24 Starting Point:\
+   Show: http://localhost:3120  http://localhost:8470\
+   Tell: Redux, WebSockets, Create React App\
+   Show: Server logs, Redux DevTools\
+   Show: process type: holdRoom  by clicking a room\
+   Tell: Doesn't affect server or other browser\
+   State Goal: holds placed on one agent are visible via changes sent to other browsers\
+\
+
+\b\fs36 Goals:\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural\partightenfactor0
+\ls1\ilvl0
+\b0\fs28 \cf0 {\listtext	\uc0\u8226 	}1-3) Server "setOccupancy" messages get reflected in client in realtime\
+{\listtext	\uc0\u8226 	}4) Clients are in sync with each other\
+{\listtext	\uc0\u8226 	}5,6) Client demo mode, and actions of type 'holdRoom' get sent to server\
+{\listtext	\uc0\u8226 	}7) Server creates, sends occupancy change messages to each client from holdRoom requests\
+{\listtext	\uc0\u8226 	}8-10) Clients are in sync no matter when they join\
+{\listtext	\uc0\u8226 	}11,12) Client releases a hold after 3 seconds unless renewed\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\fs24 \cf0 \
+
+\b\fs36 Goal:  Server messages get reflected in client in realtime
+\b0\fs24 \
+\
+Starting Point under the hood\
+   3120 front-end webpack dev\
+   8470 nodemon express with socket.io\
+   realtime reloading\
+   Redux DevTools\
+   show loadRooms/setOccupancy with timetravel\
+\
+On the client in App.js\
+import \{ ajaxStreamingGet, concat, after \} from "antares-protocol";\
+\
+in agent.js\
+\
+import \{ Agent \} from "antares-protocol";\
+const agent = new Agent();\
+window._agent = agent;\
+Object.assign(window, \{ agent, concat, after \});\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b \cf0 Problem: Array format is not realtime-compatible\
+```\
+import \{ ajaxStreamingGet \} from 'antares-protocol'\
+```
+\b0 \
+1) We took the occupancy endpoint which was returning an array of occupancy records, and we converted it to use `ajaxStreamingGet` which gave us an Observable of the records instead. Singular notifications is more compatible with realtime. We wrapped each occupancy record in a Flux Standard Action of type `setOccupancy`, and gave it to the store just as before\
+\
+1.1) We pull in the agent, add a store filter, and call process. Result is same\
+\
+
+\b Problem: We need a source of occupancy changes to verify that the client works.
+\b0 \
+\
+2) Created an Observable which periodically toggles the status of Room 20 and emits messages to that effect over the WebSocket\
+Show WebSocket panel getting frames\
+\
+
+\b Problem: Our program wasn't listening for Websocket events 
+\b0 \
+3 a) We created an Observable of all of the payloads that come over our websocket as event "setOccupancy" and we\
+\
+2 b) Concatenated this Observable with the one from the REST call. Now WebSocket `setOccupancy` events are just the continuation of the REST ones.\
+\
+On the server\
+\
+\
+
+\b\fs36 \ul Objective Achieved:  Server messages get reflected in client in realtime\ulnone \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b0\fs24 \cf0 \
+\
+
+\b\fs36 Goal:  Clients Are in Sync With Each Other
+\b0\fs24 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b \cf0 Problem: Multiple clients are not in sync
+\b0 \
+\
+On the server\
+4) Called the share() method in the pipe(). Now all clients share a single "Stream of Truth" instead of their own copies of occupancy\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b\fs36 \cf0 Goal:  Client Actions Go To Server
+\b0\fs24 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b \cf0 Problem: Want a source of client-initiated actions for testing too
+\b0 \
+\
+On the client\
+\
+5) If there's a #demo in the URL, create an Observable of random room holds, processed through the agent\
+\
+\
+
+\b Problem: Want to send client 'holdRoom' actions to the server
+\b0 \
+\
+On the client\
+\
+6) agent.on("holdRoom", (\{ action \}) => socket.emit("holdRoom", action.payload)\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b\fs36 \cf0 \ul \ulc0 Objective Achieved:  Client Actions Go To Server\ulnone \
+\
+\
+\
+Goal:  Server Notifies Other Clients\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\fs24 \cf0 Problem: Want to send `setOccupancy` out to clients when we get `holdRoom`
+\b0 \
+\
+7.1) We log recieved holdRoom payloads\
+ \
+Each client subscribes to an Observable in its 'connect' event\
+\
+Which is derived from agent.allOfType("holdRoom") and mapped into setOccupancy\
+\
+and upon next, it emits to the client\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b\fs36 \cf0 \
+\ul Objective Achieved:  Server Notifies Other Clients\ulnone \
+\
+\
+Goal: Clients are in sync no matter when they join\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\fs24 \cf0 Problem: Late breaking client not in sync
+\b0 \
+\
+Endpoints come from store; createRoomViews; Hardcodes move into store's initial state\
+8) make store\
+9) add filter to dispatch holdroom through store\
+10) adjust hardcode points\
+Add agent, storeFilter, and make sure incoming holdRoom go through store and reduce\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b\fs36 \cf0 \
+\ul Objective Achieved: Clients are in sync no matter when they join\ulnone \
+\
+\
+Goal:  Client can't hold a room forever\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\fs24 \cf0 Problem: Want to release a hold after 3 seconds
+\b0 \
+\
+11) A renderer which processes actions 3 seconds after it gets a holdRoom hold: true it emits holdRoom hold:false\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b\fs36 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\fs24 \cf0 Problem: Want a hold to be renewable
+\b0 \
+\
+12) concurrency: 'cutoff'\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b\fs36 \cf0 \ul Objective Achieved:  Client can't hold a room forever
+\b0\fs24 \ulnone \
+
+\b\fs36 \
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf2 Objective Achieved:  Writing to Database\
+Objective Achieved:  Take a Bow\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b0\fs24 \cf0 \
+\
+\
+\
+\
+\
+}
