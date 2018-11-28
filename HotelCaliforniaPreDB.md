@@ -24,12 +24,10 @@ Show: Fullscreen http://antares-hotel.herokuapp.com/
 
 ## Explain Goals
 
-1.  Server "setOccupancy" messages get reflected in client in realtime
-1.  Clients are in sync with each other
-1.  Client demo mode, and actions of type 'holdRoom' get sent to server
-1.  Server creates, sends occupancy change messages to each client from `holdRoom` requests
-1.  Clients are in sync no matter when they join
-1.  Client releases a hold after 3 seconds unless renewed
+1.  See the 20 blinking from the server
+1.  Simulate the client hold, and release upon timeout
+1.  Server relays messages from clients
+1.  Server persists
 
 ## Show Starting Point
 
@@ -37,7 +35,10 @@ Show: Fullscreen http://antares-hotel.herokuapp.com/
 
 ### Problem: Array format is not realtime-compatible
 
-1.1) Convert occupancy to an agent.subscription
+Pre-factor existing REST call to use agent
+
+- subscribe to occupancy REST records individually
+- filter through store
 
 **Context: Client**
 
@@ -55,12 +56,6 @@ agent.addFilter(({ action }) => store.dispatch(action))
 ```
 
 ```
-ajaxStreamingGet({ url: "/api/occupancy" }).subscribe(record =>
-    agent.process({ type: "setOccupancy", payload: record })
-);
-
-// OR, more idiomatically:
-
 const occupancyActions = ajaxStreamingGet({ url: "/api/occupancy" }).map(record => ({
     type: "setOccupancy",
     payload: record
@@ -68,25 +63,28 @@ const occupancyActions = ajaxStreamingGet({ url: "/api/occupancy" }).map(record 
 agent.subscribe(occupancyActions)
 ```
 
-### Problem: Need a source of occupancy changes to see that it works
+Or you could merge them on the same code path
 
-1.2) Create an Observable of setOccupancy actions; subscribe each client to it
+### Problem: Need the server to send stuff
+
+Create an Observable of setOccupancy actions; subscribe each client to it
 
 **Context: Server (server.js)**
 
-```
+```js
 const { interval } = require("rxjs");
 require("rxjs-compat");
 
-const simulatedOccupancyChanges = interval(5000)
-  .map(i => i % 2 === 1)
-  .map(hold => ({
+const simulatedOccupancyChanges = interval(5000).pipe(
+  map(i => i % 2 === 1),
+  map(hold => ({
     type: "setOccupancy",
     payload: {
       num: "20",
       occupancy: hold ? "hold" : "open"
     }
   }))
+);
 ```
 
 ```js
@@ -103,6 +101,9 @@ io.on("connection", client => {
   });
 ```
 
+And while we listened to the REST calls, we didn't
+have a `subscribe` for socket-delivered occupancy.
+
 **Context: Client (client/src/App.js)**
 
 ```js
@@ -117,37 +118,37 @@ const socketOccupancies = new Observable(notify => {
 ```
 
 ```js
-const agent = new Agent()
-agent.addFilter(({ action }) => store.dispatch(action))
 
-socketOccupancies.subscribe(action => agent.process(action))
-// OR
 agent.subscribe(socketOccupancies)
+// OR
+socketOccupancies.subscribe(action => agent.process(action))
+
 ```
 
 **Objective Achieved: Server messages get reflected in client in realtime**
 
 ## 2) Clients are in sync with each other
 
-Ask: Why are we getting a server send message per client?
+Why are we getting a server send message per client?
 
-Ask: Why are they not at the same time?
+Why are they not at the same time?
 
 Show: Open 2 windows - out of sync
 
 Solution: add `share()`
 
 ```js
-const simulatedOccupancyChanges = interval(5000)
-  .map(i => i % 2 === 1)
-  .map(hold => ({
-    type: "setOccupancy",
-    payload: {
-      num: "20",
-      occupancy: hold ? "hold" : "open"
-    }
-  }))
-  .share()
+const simulatedOccupancyChanges = interval(5000).pipe(
+      map(i => i % 2 === 1),
+      map(hold => ({
+        type: "setOccupancy",
+        payload: {
+          num: "20",
+          occupancy: hold ? "hold" : "open"
+        }
+      })),
+      share()
+    );
 ```
 
 **Objective Achieved: Clients are in sync**
@@ -260,7 +261,7 @@ sub2.unsubscribe()
 
 **Objective Achieved: Server keeps other clients in the loop**
 
-## 5) Goal Clients are in sync no matter when they join
+## 5) System is persisted/stored
 
 Problem: Clients that haven't seen all messages can't get caught up; we're not keeping state
 
@@ -287,24 +288,17 @@ app.get("/api/occupancy", (req, res) => {
 And since we already process holdRoom actions:
 
 ```js
-agent.addFilter(({ action }) => store.dispatch(action), {
-  actionsOfType: "holdRoom"
-})
-//OR
-
-agent.filter("holdRoom", ({ action }) => store.dispatch(action))
+agent.addFilter(({ action }) => store.dispatch(action))
 ```
 
 **Objective Achieved: Use a store to keep clients in sync**
+
+## And to a DB?? (time permitting)
 
 ## Summary
 
 In 15 minutes we were able to take a client-pull REST site, and make it into a realtime
 site using Antares Agents on the client and server.
-
-We didn't use a database server, but you'd never know it.
-
-We saw how driving our app from the client or the server using Observables can saved us from all those manual interactions that we'd eventually forget to make.
 
 (To closing slides)
 
