@@ -1,0 +1,140 @@
+
+---
+
+# Antares (_"Redux Over Time"_)
+
+- Makes reactive/real-time programming easier
+- Manages consequences of events in real-time
+- A friendly API for most common stream tasks
+- Applies to client or server
+- Antares ⊇ RxJS ⊇ Observables ⊇ Events ⊇ Callbacks
+
+^ How many have made a REST call for an array?
+
+# Antares ⊇ REST
+
+An Observable
+
+---
+
+# Demo: Write/Speak a List
+
+![right fit](https://s3.amazonaws.com/www.deanius.com/ant-demo-writeFile.gif)
+
+---
+
+# Demo: Session Timeout
+
+^ demos:sessionTimeout:1
+demos:sessionTimeout:2
+demos:sessionTimeout:3
+
+---
+
+```js
+const agent = new Agent();
+
+// Renderers for those actions
+const warn = ({ action }) => {
+  log("You are being logged out..");
+};
+const logout = ({ action }) => {
+  log("You have been logged out.");
+  allDone.complete(); // set that flag
+  process.stdin.pause(); // release our grip on stdin
+};
+
+// Set it up
+agent.on("warn", warn);
+agent.on("logout", logout);
+```
+
+---
+
+# A concatenation of:
+
+- An interval followed by a warn event
+- An interval followed by a logout event
+
+```
+                   warn     logout
+   |---------------|--------|----- >|
+      inactivity     warning
+```
+
+---
+
+# Cancelability Preserved
+
+<!-- prettier-ignore-start -->
+```js
+const cancelableTimeout = () => {
+  return concat(
+    after(inactivityInterval, { type: "warn" }),
+    after(warningInterval, { type: "logout" })
+  );
+}
+agent.on("keyPress", cancelableTimeout, {
+  concurrency: "cutoff",
+  processResults: true // Call agent.process auto
+});
+```
+<!-- prettier-ignore-end -->
+
+---
+
+# Session Timeout
+
+![left fit](session-timeout.gif)
+
+---
+
+Given a process that starts/restarts counting to 10 with every action,
+which way of writing this feels best to you?
+
+```js
+// @Returns An Observable that counts to `num` 1 per second, unless canceled.
+function countUpTo({ num }) {}
+```
+
+```
+ action$: -----------------
+           \    \  \  \
+           1👍   \  🚱  \
+                  2👍    \
+                          3👍
+```
+
+^ Given a function
+When events happen thusly
+Then the results will be as shown
+
+---
+
+Readability Comparison: _RxJS_
+
+```js
+action$.ofType("count").switchMap(action => {
+  return countUpTo(action.payload);
+});
+```
+
+- What action type do we process?
+- What function do we run?
+- What concurrency do we use?
+
+---
+
+Readability Comparison: _Antares_
+
+```js
+agent.on("count", ({ action }) => countUpTo(action.payload), {
+  concurrency: "cutoff"
+});
+```
+
+- What action type do we process?
+- What function do we run?
+- What concurrency do we use?
+
+---

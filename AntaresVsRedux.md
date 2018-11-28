@@ -1,30 +1,53 @@
-< Connect with the current state of things >
+## Here's a crash course in the Antares Protocol!
 
-How many have worked on a Front-end application that uses React, Redux,
-and some async middleware such as Redux-Thunk, Redux-Saga, or Redux-Observable?
+The Antares Protocol grew out of the need to improve the behavior of front-end applications that are based on React and Redux, and some sort of async processing middleware such as Redux Thunk Redux Observable and Redux Saga.
 
-Which ones?
+(Q)
 
-In this architecture, the store is mainly responsible for 2 things: Maintaining a single source of truth for data, called the state tree, and for managing the consequences of async calls. The state of the UI is partially or entirely derived from the store's state. Consequences are things in the real world that you can't take back, like sending real electricity through a wire, or posting to an API. You may call them side-effects if you wish, but I'll call them consequences.
+In this frequently used architecture, you'll find a central store is mainly responsible for 2 things: Maintaining a single source of truth for data, called the state tree, and for managing the consequences of async calls. 
 
-So in current architecture, the store manages both of these things - data, and consequences.
+Consequences are things in the real world that you can't take back, such as sending real electricity to a wire, or posting to an API. When you hear about side-effects, or 'effects' as you'll hear them called some times, these are what I'm referring to as consequences.
 
-< Describe problems with it >
+(Sierra consequence aside)
 
-Not every app requires a store - but almost every app has consequences such as: writing to a file, or calling an API on behalf of a client. So Redux-middleware based solutions, while powerful, are not applicable to entire categories of apps, like NodeJS Servers, Command Line apps, and IOT devices.
+The Antares Protocol describes an architecture that decouples the handling of consequences from the handling of data. The AP considers storing data itself a consequence.
 
-Has anybody used Redux _not_ in a front-end application?
-Redux is typically used on front end applications.
+So the most valuable service an Antares agent provides to your application is a consequence and timing engine. You can't do 'realtime' without a good engine designed to waste as little of your time, and the computers', as is possible.
 
-< Describe new solution >
-In contrast, the Antares Protocol defines an architecture that provides a consequence engine called the Agent, which decouples the handling of consequences from the maintenance of data.
+Because... (there are problems)
 
-The store's responsibility is reduced to managing the state for the application; the UI's state is still derived from that store, with component local state if you like.
+---
 
-The role of components are reduced too - for most things they do they simply tell the agent to process an action. And instead of component life-cycle methods being the primary engine of application state, the agent is responsible for assigning consequences to those actions, managing their concurrency, and communicating any async results or errors back to the app, through the store.
+## There are problems...
+with the current architecture.
 
-< Overview >
-So what is the Protocol for talking to an Agent? What is its API?
+So recall that in current architecture, the store manages both of these things - data, and consequences.
+
+## Problem 1 - Coupling
+
+I think almost every application has effects, or consequences, but not every application requires a store, or has a UI.
+
+So Redux-middleware based solutions, while powerful, are not applicable to entire categories of apps. If you're working on  NodeJS Servers, a Command Line apps, and IOT device-controlling application, you may not want to manage your consequences through a store.
+
+## Problem 2 - Complicated UI Components
+
+Components have too much responsibility, and have grown too complex. This causes issues when we let our UI layer handle the consequences of our application.
+
+Raise your hand if you've ever had (We've all had) a component update too frequently, triggering API calls or other bad things at the wrong times, or because an object identity was different when we didn't expect it. 
+
+Components allow low-level concepts like the object identity of props to control important, possibly expensive things, like API calls. That's like parents letting children drive the car!
+
+Frankly, it's very hard to get the right combination of component lifecycle events to control our consequences tightly and adequately.
+
+Simplify your components by reducing their responsibility back to where it started with React:
+
+View is a Function of Props.
+
+All the components need to do is originate actions describing what they want an agent to do on their behalf, which they get by calling a function, like `dispatch`, called `process`.
+
+This produces simpler applications, which means you can do more with less of your scarcest resource: time.
+
+##  What is the Protocol?
 
 The agent has 2 ways of getting actions into it, and 2 ways of assigning consequences from it - that's all. You get actions into an agent by calling process. Or `subscribe`, but that is just like calling process in a loop. You would process a request to add an item to a cart. You would subscribe to a data feed - it's like calling `process` many times in a loop, over time - the actions follow the same code path whichever one you use.
 
@@ -35,12 +58,6 @@ The difference between the two possible paths can be understood in terms of exce
 The synchronous code path - the filters - are run through first. A great use of a filter is for validation - If an action is not syntactically or grammatically valid, throwing an exception in a filter will require the component that processed the action to handle it right away, as an exception. Any errors thrown in filters will prevent the asynchronous code path, the renderers, from running.
 
 The asynchronous code path - the renderers - are run through after all filters have run. They run independently of each other, and are always async. They are the place you will write to an API, change the voltage on a pin - etc..  Whatever you would use Sagas or Thunks for.
-
-Renderers are for implementing consequences in the following ways:
-
-   - Errors are expected to be handled, and converted into further actions with information about the errors
-   - The caller of process will not be able to exception handle these
-   - Unhandled errors will still crash your application
 
 Renderers will typically return Observables to give the agent the ability to
    - know about the renderer's completion, error, and progress
@@ -57,9 +74,4 @@ is which filters you have, which renderers you have attached, and the business l
 
 
 
-823 words (7 minutes)
-
-
-There are problems when we let our UI layer handle the consequences of our application.
-
-Raise your hand if you've ever had (We've all had) a component update too frequently, triggering API calls or other bad things at the wrong times, or because an object identity was different when we didn't expect it. Frankly, it's very hard to get the right combination of component lifecycle events to control our consequences tightly and adequately.
+997 words (8 minutes)

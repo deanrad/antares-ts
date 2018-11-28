@@ -74,7 +74,7 @@ Why: The agent is given actions via `process`, but has no consequences specified
 1. Show: Context: HOW: Define a function addToListRenderer
 
 ```js
-function addToListRenderer({ action }) {
+function listWriter({ action }) {
   const { name } = action.payload
   fs.appendFileSync("../scratch/live-actors.yml", " - " + name + "\n", "UTF8")
 }
@@ -88,7 +88,7 @@ the action's payload. Then it can do its work.
 
 ```js
 // When X Do Y
-agent.on('addToList', addToListRenderer)
+agent.on('addToList', listWriter )
 ```
 
 **Now we have it!**
@@ -187,9 +187,18 @@ Tell: Renderings are error-isolated
 
 The Agent needs to know.
 
+```
+addToList: ScarJo
+addToList: Chris Hemsworth
+addToList: Mark Ruffalo
+speak/done: ScarJo
+speak/done: Chris Hemsworth
+speak/done: Mark Ruffalo
+```
+
 Tell: The Observable is good for timing, but often we want to know about results: AJAX, DB write
 
-Tell: If the renderer's Observable returns actions, config with processResults
+Tell: If the renderer's Observable returns actions, config with `processResults`
 
 ```js
 const dateStamp = () => new Date().getTime() & (Math.pow(2, 16) - 1);
@@ -213,6 +222,8 @@ function spokenWordRenderer({ action }) {
 }
 ```
 
+And thus the renderer can communicate status and results via actions.
+
 ```js
 agent.on("addToFile", spokenWordRenderer, {
   concurrency: "serial"
@@ -232,9 +243,9 @@ speak/done: Mark Ruffalo
 
 Show: Mind Blown!
 
-**Goal finished: Speakings should not overlap!**
+**Goal finished: We know when we're done!**
 
-## Goal 6: Bring into lockstep
+## (Optional) Goal 6: Bring into lockstep
 
 Each renderer completes its work in a non-blocking fashion, as fast as it can. This is usually a good thing, but if we really must make sure that all renderings finish before moving on:
 
