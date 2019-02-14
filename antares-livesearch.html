@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+      crossorigin="anonymous"
+    />
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/rxjs/6.2.1/rxjs.umd.min.js"></script>
+    <script src="//unpkg.com/oboe@2.1.4/dist/oboe-browser.js"></script>
+    <script src="//unpkg.com/redux@4.0.0/dist/redux.js"></script>
+    <script src="//unpkg.com/antares-protocol@2.9.1/dist/antares-protocol.js"></script>
+
+    <title>Antares Demo: Live Search</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row"><h1>Live Search Demo</h1></div>
+      <div class="row">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon3">GitHub Repos matching:</span>
+          </div>
+          <input
+            type="text"
+            class="form-control"
+            id="repo-search"
+            aria-describedby="basic-addon3"
+          />
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" id="do-search">Go</button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div id="spinner"></div>
+        <ul class="list-group" id="results" style="width: 100%">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Your results will appear here..
+          </li>
+        </ul>
+      </div>
+    </div>
+    <script>
+      const { fromEvent, from, merge } = rxjs
+      const { map, filter, distinctUntilChanged, debounceTime } = rxjs.operators
+
+      // Listen for changes the Antares/RxJS way
+      const txtSearch = document.getElementById("repo-search")
+      const btnSearch = document.getElementById("do-search")
+      const searches = merge(fromEvent(btnSearch, "click"), fromEvent(txtSearch, "input")).pipe(
+        map(e => txtSearch.value),
+        filter(s => s.length > 2),
+        distinctUntilChanged(),
+        debounceTime(700)
+      )
+
+      // When events of interest occur, tell the agent to process them
+      const { Agent } = AntaresProtocol
+      const agent = new Agent()
+      const startListening = () => {
+        searches.subscribe(searchText => {
+          agent.process({
+            type: "search/restart",
+            payload: searchText
+          })
+        })
+
+        if (document.location.hash.length > 1) {
+          const q = document.location.hash.substr(1)
+          agent.process({
+            type: "search/restart",
+            payload: q
+          })
+          txtSearch.value = q
+        }
+      }
+      //  WHAT EVENTS ARE TO BE PROCESSED  ^
+      // ---------------------------------
+      //   WHAT CONSEQUENCES ARE THERE ARE v
+
+      // BEGIN DEBUGGING FILTER
+      store = Redux.createStore(
+        (s = {}) => s,
+        window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+      )
+      agent.addFilter(({ action }) => store.dispatch(action))
+      agent.addFilter(({ action }) => console.log(action))
+      // END
+
+      const { ajaxStreamingGet } = AntaresProtocol
+      const resultList = document.getElementById("results")
+      const spinner = document.getElementById("spinner")
+      // These renderers manipulate the DOM upon certain events
+      agent.on("search/restart", () => {
+        resultList.innerHTML = ""
+        spinner.innerHTML = `<img height="30" width="60" src="https://cdn-images-1.medium.com/max/1600/1*9EBHIOzhE1XfMYoKz1JcsQ.gif"/>`
+      })
+      agent.on("search/complete", () => {
+        spinner.innerHTML = ""
+      })
+      agent.on("search/result", ({ action }) => {
+        const { name, starCount } = action.payload
+        if (!name) return
+
+        resultList.innerHTML += `
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                ${name}
+                <span class="badge badge-primary badge-pill">${starCount} ★</span>
+            </li>
+            `
+      })
+      // This Epic's job is to tell the world of results streamed from the
+      // search, and to limit the concurrency of searches to 1 by cutting off
+      // any existing search once a new one begins
+      agent.addRenderer(notifyResultsWith("search/result", "search/complete"), {
+        actionsOfType: "search/restart",
+        processResults: true,
+        concurrency: "cutoff"
+      })
+
+      const { interval, of, zip } = rxjs
+      const { catchError, take, endWith } = rxjs.operators
+      function notifyResultsWith(nextType, completeType) {
+        return ({ action }) => {
+          // const url = 'https://untitled-yd6fw62bsoo0.runkit.sh/'
+          const url = "https://api.github.com/search/repositories?q=" + action.payload
+          const repos = ajaxStreamingGet({
+            url,
+            // expandKey: 'items[*]',
+            // lib: 'oboe'
+            expandKey: "items",
+            lib: "rxjs"
+          })
+          // zipping with a slower one is a common pattern
+          return zip(interval(500), repos, (_, repo) => repo).pipe(
+            // // we have a bug where we dont find out the search is donej
+            // // but otherwise we could
+            take(5),
+            map(i => ({
+              type: nextType,
+              payload: {
+                name: i.full_name,
+                starCount: i.stargazers_count
+              }
+            })),
+            endWith({
+              type: completeType,
+              payload: {}
+            }),
+            catchError(e =>
+              of({
+                type: "search/error",
+                payload: e
+              })
+            )
+          )
+        }
+      }
+
+      // FINALLY, KICK IT OFF
+      startListening()
+    </script>
+  </body>
+</html>

@@ -221,9 +221,9 @@ _agent.process({ type: "holdRoom", payload: { num: 10, hold: true } })
 **Context: Server**
 
 ```js
-client.on("holdRoom", ({ num, hold }) => {
-  console.log("Recv: " + JSON.stringify({ num, hold }))
-})
+  client.on("holdRoom", ({ num, hold }) => {
+    console.log("Recv: holdRoom, " + JSON.stringify({ num, hold }));
+  });
 ```
 
 **Objective Achieved: Client demo mode!**

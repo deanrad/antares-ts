@@ -62,7 +62,7 @@ theme: Fira, 3
 
 ^ So I'm here to help you (\*) Manage Async With Antares
 
----
+<!--
 
 ![original fit](http://www.deanius.com/deck-sick.jpg)
 
@@ -71,6 +71,8 @@ theme: Fira, 3
 ![inline](http://www.deanius.com/deck-puddle.png)
 
 ---
+
+-->
 
 ![left](https://m-festival.biz/en/wp-content/uploads/2018/10/2439ca6321db1eb1851f7cfd771ccdee-860x517.jpg)
 ![right](https://www.recipetineats.com/wp-content/uploads/2017/09/Omelette-with-Mushrooms_0-2.jpg)
