@@ -57,7 +57,7 @@ build-lists: true
 ---
 
 ![left](https://m-festival.biz/en/wp-content/uploads/2018/10/2439ca6321db1eb1851f7cfd771ccdee-860x517.jpg)
-![right](https://www.recipetineats.com/wp-content/uploads/2017/09/Omelette-with-Mushrooms_0-2.jpg)
+![right](http://www.solpassionmusic.com/wp-content/uploads/2018/02/Dealer-Live10-Suite-ArrangementView-Clips.png)
 
 ---
 
@@ -67,9 +67,73 @@ build-lists: true
 
 ---
 
+```js
+function doAsyncStuff(cb) {
+  try {
+    doStuff1(function(err, value) {
+      if (err) return cb(err)
+      try {
+        doStuff2(value, function(err, value2) {
+          if (err) return cb(err)
+          cb(null, value2)
+        })
+      } catch (e) {
+        cb(e)
+      }
+    })
+  } catch (e) {
+    cb(e)
+  }
+}
+```
+
+---
+
 # Promises
 
 ## So slow, I can hardly `await` 🙄
+
+---
+
+# Promises
+
+```js
+let status = "not loaded"
+Promise.resolve("loaded").then(newStatus => {
+  status = newStatus
+})
+console.log(status)
+```
+
+---
+
+# Promises
+
+```js
+let status = "not loaded"
+Promise.resolve("loaded").then(newStatus => {
+  status = newStatus
+})
+console.log(status)
+```
+
+---
+
+# Promises
+
+```js
+async function getUsers(usernames) {
+  let users = []
+
+  for (let name of usernames) {
+    let user = await fetch(`http://server/users/${user}`)
+    users.push(user)
+  }
+
+  return users
+}
+;["bob", "angie"]
+```
 
 ---
 
@@ -102,15 +166,15 @@ build-lists: true
 
 # FileWriter/Speaker Conclusions
 
-## Observables:
+## Observables Are:
 
-- Data type for Events/Computation over time
-- Are sequenced more readily than Promises because they are:
+- A Data-type for Events/Computation over time
+- Combined more readily than Promises because they are:
   - lazy
   - cancelable
-- As a return value, encapsulate a source
+- As a return value, encapsulate a process for data
 - Can model a `stdin` stream inside an app
-- Can model external infrastructure
+- Can model external infrastructure (IOT, etc..)
 
 ---
 
@@ -129,7 +193,6 @@ build-lists: true
 ![inline](https://www.maxpixel.net/static/photo/2x/Piano-Keyboard-Piano-Keyboard-Music-Keys-2412410.jpg)![inline fit](https://s3.amazonaws.com/www.deanius.com/merge-map-marble.png)
 
 ^ - ⭐ Liking many pictures
-
 - ️Independent events
 
 ---
@@ -139,7 +202,6 @@ build-lists: true
 ![inline ](https://cdn-images-1.medium.com/max/1600/1*9opgd2jPRfYK9PtTzkD05w.jpeg)![inline fit](https://s3.amazonaws.com/www.deanius.com/concat-map-marble.png)
 
 ^ - "Add to Playlist"
-
 - Queue up
 - Limited resources.
 - Sierra Alexa song-hopping
@@ -151,7 +213,6 @@ build-lists: true
 ![inline](https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Tulane_Commencement_2013-6161_Dr_Michael_White_Clarinet.jpg/1024px-Tulane_Commencement_2013-6161_Dr_Michael_White_Clarinet.jpg)![inline](https://s3.amazonaws.com/www.deanius.com/switch-map-marble.png)
 
 ^ - Session timeout / autocomplete
-
 - NOT enqueuing songs (1 song replaces/cuts-off the last)
 - Changing chatrooms
 - "There can be only one!"
@@ -163,7 +224,6 @@ build-lists: true
 ![inline](https://scontent-sea1-1.cdninstagram.com/vp/d0e9ee5aa7e02d1a45fe764ba9d9fa96/5C0EA760/t51.2885-15/e35/13285239_294133950927073_1582998619_n.jpg?se=8&ig_cache_key=MTI2NDE1NTQ2MzYwNzc2MDY5NA%3D%3D.2)![inline fit](https://s3.amazonaws.com/www.deanius.com/exhaust-map-marble.png)
 
 ^ - The elevator button.
-
 - Toggle a switch.
 - Declan double-stomping the sweeper toggle.
 
@@ -177,7 +237,7 @@ build-lists: true
 
 ---
 
-![inline fit](InboxJukeboxScreenshotClosed.png)
+![inline fit](https://s3.amazonaws.com/www.deanius.com/InboxJukeboxScreenshotClosed.png)
 
 ---
 
@@ -186,7 +246,7 @@ build-lists: true
 **Given**: You have media files in your inbox (mp3, m4a, etc)
 **When**: You OAuth this application to your Gmail
 **Then**: You should hear a stream of those files
-**And**: You can customize that subset
+**And**: You can customize which files are playing
 
 ---
 
@@ -210,39 +270,39 @@ build-lists: true
 
 ---
 
-![fit](EventProtocol.png)
+![fit](https://s3.amazonaws.com/www.deanius.com/EventProtocol.png)
 
 ---
 
-![fit](EventProtocol-4.tiff)
+![fit](https://s3.amazonaws.com/www.deanius.com/EventProtocol-4.png)
 
 ---
 
-![fit](EventProtocol-6.tiff)
+![fit](https://s3.amazonaws.com/www.deanius.com/EventProtocol-6.png)
 
 ---
 
-![fit](EventProtocol-9.tiff)
+![fit](https://s3.amazonaws.com/www.deanius.com/EventProtocol-9.png)
 
 ---
 
-![fit](EventProtocol-12.tiff)
+![fit](https://s3.amazonaws.com/www.deanius.com/EventProtocol-12.png)
 
 ---
 
-![fit](EventProtocol-14.tiff)
+![fit](https://s3.amazonaws.com/www.deanius.com/EventProtocol-14.png)
 
 ---
 
-![fit](EventProtocol-16.tiff)
+![fit](https://s3.amazonaws.com/www.deanius.com/EventProtocol-16.png)
 
 ---
 
-![fit](EventProtocol-18.tiff)
+![fit](https://s3.amazonaws.com/www.deanius.com/EventProtocol-18.png)
 
 ---
 
-![fit](EventProtocol-20.tiff)
+![fit](https://s3.amazonaws.com/www.deanius.com/EventProtocol-20.png)
 
 ---
 
@@ -274,15 +334,20 @@ _Also, A Means to Propogate Change_
 
 ---
 
-# Antares = Events
+- Antares = Events
+- ANTARES ⊇ REST
+- Events > REST
 
 ---
 
-# ANTARES ⊇ REST
+# Resources
 
----
+http://github.com/deanius/TimeHopInbox.html
 
-# Events ⊇ REST
+- OAuth with Gmail
+- Chains of async
+- Concurrency parallel vs serial
+- WebAudio API
 
 ---
 
