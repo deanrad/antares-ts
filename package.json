@@ -111,7 +111,7 @@
     "cz-conventional-changelog": "^2.0.0",
     "faker": "^4.1.0",
     "husky": ">=1.0.0",
-    "inquirer": "^6.0.0",
+    "inquirer": "^6.4.1",
     "jest": "^22.0.2",
     "keypress": "^0.2.1",
     "lint-staged": "^7.1.0",
